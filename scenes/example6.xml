@@ -2,7 +2,7 @@
 <!DOCTYPE scene SYSTEM "scene.dtd">
 
 <scene output_file="example6.png">
-    <background_color r="0.0" g="0.0" b="0.0"/>
+    <background_color _r="0.0" _g="0.0" _b="0.0"/>
     <camera>
         <position x="0.0" y="0.0" z="1.0"/>
         <lookat x="0.0" y="0.0" z="-2.5"/>
@@ -13,14 +13,14 @@
     </camera>
     <lights>
         <ambient_light>
-            <color r="1.0" g="1.0" b="1.0"/>
+            <color _r="1.0" _g="1.0" _b="1.0"/>
         </ambient_light>
         <point_light>
-            <color r="0.7" g="0.7" b="0.7"/>
+            <color _r="0.7" _g="0.7" _b="0.7"/>
             <position x="1.5" y="3.0" z="-2.5"/>
         </point_light>
         <point_light>
-            <color r="0.7" g="0.7" b="0.7"/>
+            <color _r="0.7" _g="0.7" _b="0.7"/>
             <position x="-1.5" y="3.0" z="-2.5"/>
         </point_light>
     </lights>
@@ -28,9 +28,9 @@
         <sphere radius="1.0">
             <position x="0.0" y="1.0" z="-3.0"/>
             <material_solid>
-                <color r="0.3" g="0.6" b="0.3"/>
+                <color _r="0.3" _g="0.6" _b="0.3"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
-                <reflectance r="0.0"/>
+                <reflectance _r="0.0"/>
                 <transmittance t="0.7"/>
                 <refraction iof="2.0"/>
             </material_solid>
@@ -39,7 +39,7 @@
             <material_textured>
                 <texture name="rainbow.png"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="20"/>
-                <reflectance r="0.0"/>
+                <reflectance _r="0.0"/>
                 <transmittance t="0.0"/>
                 <refraction iof="0.0"/>
             </material_textured>

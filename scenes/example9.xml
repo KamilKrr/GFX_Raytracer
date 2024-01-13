@@ -2,7 +2,7 @@
 <!DOCTYPE scene SYSTEM "scene.dtd">
 
 <scene output_file="example9.png">
-    <background_color r="0.0" g="0.0" b="0.0"/>
+    <background_color _r="0.0" _g="0.0" _b="0.0"/>
 
     <!-- Camera -->
     <camera>
@@ -17,14 +17,14 @@
     <!-- Lights -->
     <lights>
         <ambient_light>
-            <color r="1.0" g="1.0" b="1.0"/>
+            <color _r="1.0" _g="1.0" _b="1.0"/>
         </ambient_light>
         <point_light>
-            <color r="0.7" g="0.7" b="0.7"/>
+            <color _r="0.7" _g="0.7" _b="0.7"/>
             <position x="2.0" y="10.0" z="-2.5"/>
         </point_light>
         <point_light>
-            <color r="0.7" g="0.7" b="0.7"/>
+            <color _r="0.7" _g="0.7" _b="0.7"/>
             <position x="-2.0" y="10.0" z="-2.5"/>
         </point_light>
     </lights>
@@ -35,9 +35,9 @@
         <!-- First Box -->
         <mesh name="box.obj">
             <material_solid>
-                <color r="1.0" g="1.0" b="1.0"/>
+                <color _r="1.0" _g="1.0" _b="1.0"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="20"/>
-                <reflectance r="0"/>
+                <reflectance _r="0"/>
                 <transmittance t="0"/>
                 <refraction iof="0"/>
             </material_solid>
@@ -51,9 +51,9 @@
         <!-- Second Box -->
         <mesh name="box.obj">
             <material_solid>
-                <color r="1.0" g="1.0" b="1.0"/>
+                <color _r="1.0" _g="1.0" _b="1.0"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="20"/>
-                <reflectance r="0"/>
+                <reflectance _r="0"/>
                 <transmittance t="0"/>
                 <refraction iof="0"/>
             </material_solid>
@@ -67,9 +67,9 @@
         <!-- Third Box -->
         <mesh name="box.obj">
             <material_solid>
-                <color r="1.0" g="1.0" b="1.0"/>
+                <color _r="1.0" _g="1.0" _b="1.0"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="20"/>
-                <reflectance r="1.0"/>
+                <reflectance _r="1.0"/>
                 <transmittance t="0"/>
                 <refraction iof="2.3"/>
             </material_solid>
@@ -83,9 +83,9 @@
         <!-- Fourth Box -->
         <mesh name="box.obj">
             <material_solid>
-                <color r="1.0" g="1.0" b="1.0"/>
+                <color _r="1.0" _g="1.0" _b="1.0"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="20"/>
-                <reflectance r="1.0"/>
+                <reflectance _r="1.0"/>
                 <transmittance t="0"/>
                 <refraction iof="2.3"/>
             </material_solid>
@@ -99,9 +99,9 @@
         <!-- Cylinder -->
         <mesh name="cylinder.obj">
             <material_solid>
-                <color r="1.0" g="1.0" b="1.0"/>
+                <color _r="1.0" _g="1.0" _b="1.0"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="20"/>
-                <reflectance r="0"/>
+                <reflectance _r="0"/>
                 <transmittance t="0"/>
                 <refraction iof="0"/>
             </material_solid>
@@ -117,7 +117,7 @@
             <material_textured>
                 <texture name="mramor6x6.png"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
-                <reflectance r="0"/>
+                <reflectance _r="0"/>
                 <transmittance t="0"/>
                 <refraction iof="0"/>
             </material_textured>
@@ -133,7 +133,7 @@
             <material_textured>
                 <texture name="Brick.png"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
-                <reflectance r="0"/>
+                <reflectance _r="0"/>
                 <transmittance t="0"/>
                 <refraction iof="0"/>
             </material_textured>
@@ -147,9 +147,9 @@
         <sphere radius="1.0">
             <position x="0" y="0" z="0"/>
             <material_solid>
-                <color r="0.18" g="0.5" b="0.17"/>
+                <color _r="0.18" _g="0.5" _b="0.17"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
-                <reflectance r="0"/>
+                <reflectance _r="0"/>
                 <transmittance t="0.8"/>
                 <refraction iof="2.3"/>
             </material_solid>
@@ -164,9 +164,9 @@
         <sphere radius="1.0">
             <position x="0" y="0" z="0"/>
             <material_solid>
-                <color r="0.18" g="0.5" b="0.17"/>
+                <color _r="0.18" _g="0.5" _b="0.17"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
-                <reflectance r="0"/>
+                <reflectance _r="0"/>
                 <transmittance t="0.8"/>
                 <refraction iof="2.3"/>
             </material_solid>
@@ -181,9 +181,9 @@
         <sphere radius="1.0">
             <position x="0" y="0" z="0"/>
             <material_solid>
-                <color r="0.17" g="0.18" b="0.5"/>
+                <color _r="0.17" _g="0.18" _b="0.5"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
-                <reflectance r="0.8"/>
+                <reflectance _r="0.8"/>
                 <transmittance t="0.0"/>
                 <refraction iof="2.3"/>
             </material_solid>
@@ -198,9 +198,9 @@
         <sphere radius="1.0">
             <position x="0" y="0" z="0"/>
             <material_solid>
-                <color r="0.17" g="0.18" b="0.5"/>
+                <color _r="0.17" _g="0.18" _b="0.5"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
-                <reflectance r="0.8"/>
+                <reflectance _r="0.8"/>
                 <transmittance t="0.0"/>
                 <refraction iof="2.3"/>
             </material_solid>
@@ -215,9 +215,9 @@
         <sphere radius="1.0">
             <position x="0" y="0" z="0"/>
             <material_solid>
-                <color r="0.2" g="0.2" b="0.2"/>
+                <color _r="0.2" _g="0.2" _b="0.2"/>
                 <phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
-                <reflectance r="0.3"/>
+                <reflectance _r="0.3"/>
                 <transmittance t="0.7"/>
                 <refraction iof="1.5"/>
             </material_solid>
