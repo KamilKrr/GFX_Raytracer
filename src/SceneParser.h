@@ -11,6 +11,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <cstring>
 
 class SceneParser {
 public:

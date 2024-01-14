@@ -9,6 +9,7 @@ protected:
 
 public:
     Light(const Color& color) : color{color} {}
+    virtual ~Light() = default;
 
     const Color& getColor() const { return color; }
     virtual double lambertian(const vec3& normal) const = 0;

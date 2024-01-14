@@ -8,6 +8,7 @@
 #include "Surface.h"
 #include <utility>
 #include <vector>
+#include <memory>
 
 class Scene {
     std::string output_file {"default.png"};
