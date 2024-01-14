@@ -18,6 +18,7 @@ public:
     std::vector<Color> getColors() const {return this->colors;};
     std::string getName() const {return this->name;};
     void setPixelColor(unsigned int index, const Color& color) {this->colors[index] = color;}
+    void setPixelColor(unsigned int x, unsigned int y, const Color& color) { setPixelColor(y * width + x, color); }
 
 };
 
