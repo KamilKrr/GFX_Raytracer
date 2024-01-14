@@ -2,11 +2,13 @@
 #include <vector>
 
 #include "src/Image.h"
+#include "src/SceneParser.h"
 #include "src/ImageExporter.h"
 
 int main() {
 
-    auto* image = new Image( "export", 500, 500);
+    auto* scene = SceneParser::parseScene("../scenes/example1.xml");
+    auto* image = new Image( scene->getOutputFile(), scene->getCamera()->getResolutionHorizontal(), scene->getCamera()->getResolutionVertical());
 
     // Generate a gradient from red to blue horizontally and from green to yellow vertically
     for (unsigned y = 0; y < image->getHeight(); ++y) {
@@ -14,13 +16,7 @@ int main() {
             // Calculate the index for the current pixel
             unsigned index = y * image->getWidth() + x;
 
-            auto* color = new Color(
-                    static_cast<unsigned char>(255 * x / image->getWidth()),
-                    static_cast<unsigned char>(255 * y / image->getHeight()),
-                    128
-                );
-
-            image->setPixelColor(index, *color);
+            image->setPixelColor(index, *scene->getBackgroundColor());
         }
     }
 

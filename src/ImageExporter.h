@@ -8,7 +8,7 @@
 class ImageExporter {
 public:
     static void exportImage(const Image& image) {
-        std::string filename = image.getName() + ".png";
+        std::string filename = image.getName();
         unsigned error = lodepng::encode(filename, ImageExporter::createColorBuffer(image.getColors()), image.getWidth(), image.getHeight());
 
         if (error) {
