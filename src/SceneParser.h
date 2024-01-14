@@ -10,6 +10,7 @@
 #include "ParallelLight.h"
 #include <string>
 #include <iostream>
+#include <memory>
 
 class SceneParser {
 public:
@@ -66,24 +67,25 @@ public:
             pugi::xml_node xml_surfaces = xml_scene.child("surfaces");
 
             for (pugi::xml_node xml_surface = xml_surfaces.first_child(); xml_surface; xml_surface = xml_surface.next_sibling()) {
-                const auto* surface_position = new vec3(xml_surface.child("position"));
-
-                pugi::xml_node xml_surface_material_solid = xml_surface.child("material_solid");
-
-                const Color* material_color = new Color(xml_surface_material_solid.child("color"));
-                const Material* surface_material = new Material(
-                        *material_color,
-                        std::stod(xml_surface_material_solid.child("phong").attribute("ka").value()),
-                        std::stod(xml_surface_material_solid.child("phong").attribute("kd").value()),
-                        std::stod(xml_surface_material_solid.child("phong").attribute("ks").value()),
-                        std::stoi(xml_surface_material_solid.child("phong").attribute("exponent").value()),
-                        std::stod(xml_surface_material_solid.child("reflectance").attribute("_r").value()),
-                        std::stod(xml_surface_material_solid.child("transmittance").attribute("t").value()),
-                        std::stof(xml_surface_material_solid.child("refraction").attribute("iof").value())
-                        );
-
-
                 if (std::strcmp(xml_surface.name(), "sphere") == 0) {
+                    const auto* surface_position = new vec3(xml_surface.child("position"));
+
+                    pugi::xml_node xml_surface_material_solid = xml_surface.child("material_solid");
+
+                    const Color* material_color = new Color(xml_surface_material_solid.child("color"));
+                    const Material* surface_material = new Material(
+                            *material_color,
+                            std::stod(xml_surface_material_solid.child("phong").attribute("ka").value()),
+                            std::stod(xml_surface_material_solid.child("phong").attribute("kd").value()),
+                            std::stod(xml_surface_material_solid.child("phong").attribute("ks").value()),
+                            std::stoi(xml_surface_material_solid.child("phong").attribute("exponent").value()),
+                            std::stod(xml_surface_material_solid.child("reflectance").attribute("_r").value()),
+                            std::stod(xml_surface_material_solid.child("transmittance").attribute("t").value()),
+                            std::stof(xml_surface_material_solid.child("refraction").attribute("iof").value())
+                            );
+
+
+
                     double sphere_radius = std::stod(xml_surface.attribute("radius").value());
 
                     auto sphere = std::make_unique<Sphere>(
