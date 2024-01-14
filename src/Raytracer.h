@@ -28,7 +28,7 @@ public:
         for (const auto& surface : scene->getSurfaces()) {
             if (surface->hit(*ray, intersection)) {
                 auto ambientColor = intersection.getMaterial()->getColor() * intersection.getMaterial()->getKa();
-                auto color = ambientColor;
+                        auto color = ambientColor;
 
                 for (const auto& light : scene->getLights()) {
                     //ignore lights that are "behind" objects -> this is responsible for shadows
@@ -77,7 +77,7 @@ public:
 
     void output() {
         ImageExporter::exportImage(*image);
-        std::cout << "Successfully created image " << this->image->getName() << std::endl;
+        std::cout << "Successfully rendered image " << this->image->getName() << std::endl;
     }
 
     void initialize(const Scene* s) {
