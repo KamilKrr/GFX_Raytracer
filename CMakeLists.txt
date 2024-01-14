@@ -31,6 +31,9 @@ set(PROJECT_SOURCES
         src/SceneParser.h
         main.cpp
         src/Material.h
+        src/Ray.h
+        src/ParallelLight.h
+        src/Intersection.h
 )
 
 # Create the executable and link it with the libraries

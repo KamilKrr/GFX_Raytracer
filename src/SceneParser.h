@@ -7,6 +7,7 @@
 #include "Material.h"
 #include "Surface.h"
 #include "Sphere.h"
+#include "ParallelLight.h"
 #include <string>
 #include <iostream>
 
@@ -51,8 +52,13 @@ public:
                 auto* color = new Color(xml_light.child("color"));
 
                 if (std::strcmp(xml_light.name(), "ambient_light") == 0) {
-                    const AmbientLight* light = new AmbientLight(*color);
-                    scene->setAmbientLight(*light);
+                    auto light = std::make_shared<AmbientLight>(*color);
+                    scene->setAmbientLight(light);
+                }else if (std::strcmp(xml_light.name(), "parallel_light") == 0) {
+                    const vec3* light_direction = new vec3(xml_light.child("direction"));
+                    auto light = std::make_unique<ParallelLight>(*color, *light_direction);
+
+                    scene->addLight(std::move(light));
                 }
             }
 
@@ -79,13 +85,14 @@ public:
 
                 if (std::strcmp(xml_surface.name(), "sphere") == 0) {
                     double sphere_radius = std::stod(xml_surface.attribute("radius").value());
-                    Surface* sphere = new Sphere(
+
+                    auto sphere = std::make_unique<Sphere>(
                             *surface_position,
                             *surface_material,
                             sphere_radius
                             );
 
-                    scene->addSurface(*sphere);
+                    scene->addSurface(std::move(sphere));
                 }
             }
         } else {
