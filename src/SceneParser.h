@@ -80,7 +80,7 @@ public:
                             std::stod(xml_surface_material_solid.child("phong").attribute("kd").value()),
                             std::stod(xml_surface_material_solid.child("phong").attribute("ks").value()),
                             std::stoi(xml_surface_material_solid.child("phong").attribute("exponent").value()),
-                            std::stod(xml_surface_material_solid.child("reflectance").attribute("_r").value()),
+                            std::stod(xml_surface_material_solid.child("reflectance").attribute("r").value()),
                             std::stod(xml_surface_material_solid.child("transmittance").attribute("t").value()),
                             std::stof(xml_surface_material_solid.child("refraction").attribute("iof").value())
                             );

@@ -14,9 +14,9 @@ public:
     Color(int r, int g, int b) : _r{r}, _g{g}, _b{b} {}
 
     Color(pugi::xml_node xml_color_node)
-            : _r{static_cast<int>(std::stod(xml_color_node.attribute("_r").value()) * 255)},
-              _g{static_cast<int>(std::stod(xml_color_node.attribute("_g").value()) * 255)},
-              _b{static_cast<int>(std::stod(xml_color_node.attribute("_b").value()) * 255)} {}
+            : _r{static_cast<int>(std::stod(xml_color_node.attribute("r").value()) * 255)},
+              _g{static_cast<int>(std::stod(xml_color_node.attribute("g").value()) * 255)},
+              _b{static_cast<int>(std::stod(xml_color_node.attribute("b").value()) * 255)} {}
 
     int r() const { return this->_r; }
     int g() const { return this->_g; }

@@ -40,8 +40,8 @@ public:
         double yi = 2 * yn - 1;
 
         //include FOV and image dimensions
-        xi *= tan(getHorizontalFOV());
-        yi *= tan(getVerticalFOV());
+        xi *= tan(degrees_to_radians(getHorizontalFOV()));
+        yi *= tan(degrees_to_radians(getVerticalFOV()));
 
         //build ray direction and normalize
         vec3 direction = vec3(xi, yi, -1);

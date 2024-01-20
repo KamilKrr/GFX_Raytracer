@@ -159,7 +159,7 @@ static int lodepng_mulofl(size_t a, size_t b, size_t* result) {
 }
 
 #ifdef LODEPNG_COMPILE_ZLIB
-/* Safely check if a + _b > c, even if overflow could happen. */
+/* Safely check if a + b > c, even if overflow could happen. */
 static int lodepng_gtofl(size_t a, size_t b, size_t c) {
   size_t d;
   if(lodepng_addofl(a, b, &d)) return 1;
@@ -751,7 +751,7 @@ static unsigned HuffmanTree_makeTable(HuffmanTree* tree) {
   if(numpresent < 2) {
     /* In case of exactly 1 symbol, in theory the huffman symbol needs 0 bits,
     but deflate uses 1 bit instead. In case of 0 symbols, no symbols can
-    appear at all, but such huffman tree could still exist (e._g. if distance
+    appear at all, but such huffman tree could still exist (e.g. if distance
     codes are never used). In both cases, not all symbols of the table will be
     filled in. Fill them in with an invalid symbol value so returning them from
     huffmanDecodeSymbol will cause error. */
@@ -2682,17 +2682,17 @@ so that it will be linked in.
 Example implementation that uses a much smaller lookup table for memory constrained cases:
 
 unsigned lodepng_crc32(const unsigned char* data, size_t length) {
-  unsigned _r = 0xffffffffu;
+  unsigned r = 0xffffffffu;
   static const unsigned table[16] = {
     0x00000000, 0x1db71064, 0x3b6e20c8, 0x26d930ac, 0x76dc4190, 0x6b6b51f4, 0x4db26158, 0x5005713c,
     0xedb88320, 0xf00f9344, 0xd6d6a3e8, 0xcb61b38c, 0x9b64c2b0, 0x86d3d2d4, 0xa00ae278, 0xbdbdf21c
   };
   while(length--) {
-    _r = table[(_r ^ *data) & 0xf] ^ (_r >> 4);
-    _r = table[(_r ^ (*data >> 4)) & 0xf] ^ (_r >> 4);
+    r = table[(r ^ *data) & 0xf] ^ (r >> 4);
+    r = table[(r ^ (*data >> 4)) & 0xf] ^ (r >> 4);
     data++;
   }
-  return _r ^ 0xffffffffu;
+  return r ^ 0xffffffffu;
 }
 */
 unsigned lodepng_crc32(const unsigned char* data, size_t length);
@@ -3362,7 +3362,7 @@ unsigned lodepng_info_copy(LodePNGInfo* dest, const LodePNGInfo* source) {
 /*index: bitgroup index, bits: bitgroup size(1, 2 or 4), in: bitgroup value, out: octet array to add bits to*/
 static void addColorBits(unsigned char* out, size_t index, unsigned bits, unsigned in) {
   unsigned m = bits == 1 ? 7 : bits == 2 ? 3 : 1; /*8 / bits - 1*/
-  /*p = the partial index in the byte, e._g. with 4 palettebits it is 0 for first half or 1 for second half*/
+  /*p = the partial index in the byte, e.g. with 4 palettebits it is 0 for first half or 1 for second half*/
   unsigned p = index & m;
   in &= (1u << bits) - 1u; /*filter out any other bits of the input value*/
   in = in << (bits * (m - p));
@@ -3439,7 +3439,7 @@ static unsigned rgba8ToPixel(unsigned char* out, size_t i,
                              const LodePNGColorMode* mode, ColorTree* tree /*for palette*/,
                              unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
   if(mode->colortype == LCT_GREY) {
-    unsigned char gray = r; /*((unsigned short)_r + _g + _b) / 3u;*/
+    unsigned char gray = r; /*((unsigned short)r + g + b) / 3u;*/
     if(mode->bitdepth == 8) out[i] = gray;
     else if(mode->bitdepth == 16) out[i * 2 + 0] = out[i * 2 + 1] = gray;
     else {
@@ -3463,7 +3463,7 @@ static unsigned rgba8ToPixel(unsigned char* out, size_t i,
     if(mode->bitdepth == 8) out[i] = index;
     else addColorBits(out, i, mode->bitdepth, (unsigned)index);
   } else if(mode->colortype == LCT_GREY_ALPHA) {
-    unsigned char gray = r; /*((unsigned short)_r + _g + _b) / 3u;*/
+    unsigned char gray = r; /*((unsigned short)r + g + b) / 3u;*/
     if(mode->bitdepth == 8) {
       out[i * 2 + 0] = gray;
       out[i * 2 + 1] = a;
@@ -3493,7 +3493,7 @@ static void rgba16ToPixel(unsigned char* out, size_t i,
                          const LodePNGColorMode* mode,
                          unsigned short r, unsigned short g, unsigned short b, unsigned short a) {
   if(mode->colortype == LCT_GREY) {
-    unsigned short gray = r; /*((unsigned)_r + _g + _b) / 3u;*/
+    unsigned short gray = r; /*((unsigned)r + g + b) / 3u;*/
     out[i * 2 + 0] = (gray >> 8) & 255;
     out[i * 2 + 1] = gray & 255;
   } else if(mode->colortype == LCT_RGB) {
@@ -3504,7 +3504,7 @@ static void rgba16ToPixel(unsigned char* out, size_t i,
     out[i * 6 + 4] = (b >> 8) & 255;
     out[i * 6 + 5] = b & 255;
   } else if(mode->colortype == LCT_GREY_ALPHA) {
-    unsigned short gray = r; /*((unsigned)_r + _g + _b) / 3u;*/
+    unsigned short gray = r; /*((unsigned)r + g + b) / 3u;*/
     out[i * 4 + 0] = (gray >> 8) & 255;
     out[i * 4 + 1] = gray & 255;
     out[i * 4 + 2] = (a >> 8) & 255;
@@ -3868,7 +3868,7 @@ unsigned lodepng_convert(unsigned char* out, const unsigned char* in,
 
 
 /* Converts a single rgb color without alpha from one type to another, color bits truncated to
-their bitdepth. In case of single channel (gray or palette), only the _r channel is used. Slow
+their bitdepth. In case of single channel (gray or palette), only the r channel is used. Slow
 function, do not use to process all pixels of an image. Alpha channel not supported on purpose:
 this is for bKGD, supporting alpha may prevent it from finding a color in the palette, from the
 specification it looks like bKGD should ignore the alpha values of the palette since it can use
@@ -4066,7 +4066,7 @@ unsigned lodepng_compute_color_stats(LodePNGColorStats* stats,
       getPixelColorRGBA8(&r, &g, &b, &a, in, i, mode_in);
 
       if(!bits_done && stats->bits < 8) {
-        /*only _r is checked, < 8 bits is only relevant for grayscale*/
+        /*only r is checked, < 8 bits is only relevant for grayscale*/
         unsigned bits = getValueRequiredBits(r);
         if(bits > stats->bits) stats->bits = bits;
       }
@@ -4167,7 +4167,7 @@ static unsigned lodepng_color_stats_add(LodePNGColorStats* stats,
 The stats should be computed with lodepng_compute_color_stats.
 mode_in is raw color profile of the image the stats were computed on, to copy palette order from when relevant.
 Minimal PNG color model means the color type and bit depth that gives smallest amount of bits in the output image,
-e._g. gray if only grayscale pixels, palette if less than 256 colors, color key if only single transparent color, ...
+e.g. gray if only grayscale pixels, palette if less than 256 colors, color key if only single transparent color, ...
 This is used if auto_convert is enabled (it is by default).
 */
 static unsigned auto_choose_color(LodePNGColorMode* mode_out,
@@ -4562,7 +4562,7 @@ static unsigned unfilterScanline(unsigned char* recon, const unsigned char* scan
 static unsigned unfilter(unsigned char* out, const unsigned char* in, unsigned w, unsigned h, unsigned bpp) {
   /*
   For PNG filter method 0
-  this function unfilters a single image (e._g. without interlacing this is called once, with Adam7 seven times)
+  this function unfilters a single image (e.g. without interlacing this is called once, with Adam7 seven times)
   out must have enough bytes allocated already, in must have the scanlines + 1 filtertype byte per scanline
   w and h are image dimensions or dimensions of reduced image, bpp is bits per pixel
   in and out are allowed to be the same memory address (but aren't the same size since in has the extra filter bytes)
@@ -4648,7 +4648,7 @@ static void removePaddingBits(unsigned char* out, const unsigned char* in,
   for the Adam7 code, the color convert code and the output to the user.
   in and out are allowed to be the same buffer, in may also be higher but still overlapping; in must
   have >= ilinebits*h bits, out must have >= olinebits*h bits, olinebits must be <= ilinebits
-  also used to move bits after earlier such operations happened, e._g. in a sequence of reduced images from Adam7
+  also used to move bits after earlier such operations happened, e.g. in a sequence of reduced images from Adam7
   only useful if (ilinebits - olinebits) is a value in the range 1..7
   */
   unsigned y;
@@ -4862,7 +4862,7 @@ static unsigned readChunk_zTXt(LodePNGInfo* info, const LodePNGDecoderSettings* 
 
     length = (unsigned)chunkLength - string2_begin;
     zlibsettings.max_output_size = decoder->max_text_size;
-    /*will fail if zlib error, e._g. if length is too small*/
+    /*will fail if zlib error, e.g. if length is too small*/
     error = zlib_decompress(&str, &size, 0, &data[string2_begin],
                             length, &zlibsettings);
     /*error: compressed text larger than  decoder->max_text_size*/
@@ -4944,7 +4944,7 @@ static unsigned readChunk_iTXt(LodePNGInfo* info, const LodePNGDecoderSettings* 
       unsigned char* str = 0;
       size_t size = 0;
       zlibsettings.max_output_size = decoder->max_text_size;
-      /*will fail if zlib error, e._g. if length is too small*/
+      /*will fail if zlib error, e.g. if length is too small*/
       error = zlib_decompress(&str, &size, 0, &data[begin],
                               length, &zlibsettings);
       /*error: compressed text larger than  decoder->max_text_size*/
@@ -5072,7 +5072,7 @@ static unsigned readChunk_sBIT(LodePNGInfo* info, const unsigned char* data, siz
     if(chunkLength != 1) return 114;
     if(data[0] == 0 || data[0] > bitdepth) return 115;
     info->sbit_defined = 1;
-    info->sbit_r = info->sbit_g = info->sbit_b = data[0]; /*setting _g and _b is not required, but sensible*/
+    info->sbit_r = info->sbit_g = info->sbit_b = data[0]; /*setting g and b is not required, but sensible*/
   } else if(info->color.colortype == LCT_RGB || info->color.colortype == LCT_PALETTE) {
     /*error: this chunk must be 3 bytes for RGB and palette image*/
     if(chunkLength != 3) return 114;
@@ -5088,7 +5088,7 @@ static unsigned readChunk_sBIT(LodePNGInfo* info, const unsigned char* data, siz
     if(data[0] == 0 || data[1] == 0) return 115;
     if(data[0] > bitdepth || data[1] > bitdepth) return 115;
     info->sbit_defined = 1;
-    info->sbit_r = info->sbit_g = info->sbit_b = data[0]; /*setting _g and _b is not required, but sensible*/
+    info->sbit_r = info->sbit_g = info->sbit_b = data[0]; /*setting g and b is not required, but sensible*/
     info->sbit_a = data[1];
   } else if(info->color.colortype == LCT_RGBA) {
     /*error: this chunk must be 4 bytes for grayscale image*/
@@ -6379,7 +6379,7 @@ unsigned lodepng_encode(unsigned char** out, size_t* outsize,
         info.colortype. Palette is not used here. This conversion is not allowed if
         info_png->sbit_r < auto_color.bitdepth, because specifically for alpha, non-presence of
         an sbit value heavily implies that alpha's bit depth is equal to the PNG bit depth (rather
-        than the bit depths set in the _r, _g and _b sbit values, by how the PNG specification describes
+        than the bit depths set in the r, g and b sbit values, by how the PNG specification describes
         handling tRNS chunk case with sBIT), so be conservative here about ignoring user input.*/
       if(info.color.colortype != LCT_PALETTE && auto_color.colortype != LCT_PALETTE &&
          equal && info_png->sbit_r == auto_color.bitdepth) {
@@ -6768,7 +6768,7 @@ const char* lodepng_error_text(unsigned code) {
     case 101: return "PNG specification does not allow RGB ICC profile on gray color types and vice versa";
     case 102: return "not allowed to set grayscale ICC profile with colored pixels by PNG specification";
     case 103: return "invalid palette index in bKGD chunk. Maybe it came before PLTE chunk?";
-    case 104: return "invalid bKGD color while encoding (e._g. palette index out of range)";
+    case 104: return "invalid bKGD color while encoding (e.g. palette index out of range)";
     case 105: return "integer overflow of bitsize";
     case 106: return "PNG file must have PLTE chunk if color type is palette";
     case 107: return "color convert from palette mode requested without setting the palette data in it";

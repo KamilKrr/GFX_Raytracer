@@ -16,6 +16,7 @@ CLion on Windows
 Almighty
 
 # How to run
+(This works on Almighty)
 in the folder, create a build directory
 
     mkdir build
