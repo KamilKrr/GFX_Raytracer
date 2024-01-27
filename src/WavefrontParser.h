@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include "Mesh.h"
+#include "point2.h"
 
 class WavefrontParser {
 public:
@@ -19,6 +20,7 @@ public:
 private:
     static void parseFile(std::ifstream& file, const std::shared_ptr<Mesh> mesh){
         std::vector<point3> vertices{};
+        std::vector<point2> texels{};
         std::vector<vec3> normals{};
         std::vector<shared_ptr<Face>> faces;
 
@@ -29,6 +31,9 @@ private:
             if(parts.at(0) == "v") {
                 point3 vertex = point3(parts.at(1), parts.at(2), parts.at(3));
                 vertices.push_back(vertex);
+            }else if(parts.at(0) == "vt") {
+                point2 texel = point2(parts.at(1), parts.at(2));
+                texels.push_back(texel);
             }else if(parts.at(0) == "vn") {
                 vec3 normal = vec3(parts.at(1), parts.at(2), parts.at(3));
                 normals.push_back(normal);
@@ -36,6 +41,10 @@ private:
                 int v1 = std::stoi(splitIntoParts(parts.at(1), '/').at(0));
                 int v2 = std::stoi(splitIntoParts(parts.at(2), '/').at(0));
                 int v3 = std::stoi(splitIntoParts(parts.at(3), '/').at(0));
+
+                int vt1 = std::stoi(splitIntoParts(parts.at(1), '/').at(1));
+                int vt2 = std::stoi(splitIntoParts(parts.at(2), '/').at(1));
+                int vt3 = std::stoi(splitIntoParts(parts.at(3), '/').at(1));
 
                 int vn1 = std::stoi(splitIntoParts(parts.at(1), '/').at(2));
                 int vn2 = std::stoi(splitIntoParts(parts.at(2), '/').at(2));
@@ -45,6 +54,9 @@ private:
                         vertices.at(v1-1),
                         vertices.at(v2-1),
                         vertices.at(v3-1),
+                        texels.at(vt1-1),
+                        texels.at(vt2-1),
+                        texels.at(vt3-1),
                         normals.at(vn1-1),
                         normals.at(vn2-1),
                         normals.at(vn3-1)

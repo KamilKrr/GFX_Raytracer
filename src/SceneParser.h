@@ -11,6 +11,9 @@
 #include "Mesh.h"
 #include "WavefrontParser.h"
 #include "PointLight.h"
+#include "ImageDecoder.h"
+#include "ColorMaterial.h"
+#include "TextureMaterial.h"
 #include <string>
 #include <iostream>
 #include <memory>
@@ -77,19 +80,41 @@ public:
 
             for (pugi::xml_node xml_surface = xml_surfaces.first_child(); xml_surface; xml_surface = xml_surface.next_sibling()) {
 
-                pugi::xml_node xml_surface_material_solid = xml_surface.child("material_solid");
+                const Material* surface_material;
 
-                const Color* material_color = new Color(xml_surface_material_solid.child("color"));
-                const Material* surface_material = new Material(
-                        *material_color,
-                        std::stod(xml_surface_material_solid.child("phong").attribute("ka").value()),
-                        std::stod(xml_surface_material_solid.child("phong").attribute("kd").value()),
-                        std::stod(xml_surface_material_solid.child("phong").attribute("ks").value()),
-                        std::stoi(xml_surface_material_solid.child("phong").attribute("exponent").value()),
-                        std::stod(xml_surface_material_solid.child("reflectance").attribute("r").value()),
-                        std::stod(xml_surface_material_solid.child("transmittance").attribute("t").value()),
-                        std::stof(xml_surface_material_solid.child("refraction").attribute("iof").value())
-                );
+                pugi::xml_node xml_surface_material_solid = xml_surface.child("material_solid");
+                pugi::xml_node xml_surface_material_textured = xml_surface.child("material_textured");
+
+                if(xml_surface_material_solid != nullptr) {
+                    const auto material_color = Color(xml_surface_material_solid.child("color"));
+                    surface_material = new ColorMaterial(
+                            material_color,
+                            std::stod(xml_surface_material_solid.child("phong").attribute("ka").value()),
+                            std::stod(xml_surface_material_solid.child("phong").attribute("kd").value()),
+                            std::stod(xml_surface_material_solid.child("phong").attribute("ks").value()),
+                            std::stoi(xml_surface_material_solid.child("phong").attribute("exponent").value()),
+                            std::stod(xml_surface_material_solid.child("reflectance").attribute("r").value()),
+                            std::stod(xml_surface_material_solid.child("transmittance").attribute("t").value()),
+                            std::stof(xml_surface_material_solid.child("refraction").attribute("iof").value())
+                    );
+                }else if(xml_surface_material_textured != nullptr){
+                    std::string xml_surface_texture = xml_surface_material_textured.child("texture").attribute("name").value();
+                    //construct path relative to the scene.xml file
+                    std::filesystem::path input_filename_directory = std::filesystem::path(filename).parent_path();
+                    std::string xml_surface_filename = (input_filename_directory / xml_surface_texture).string();
+
+                    Image texture = ImageDecoder::importImage(xml_surface_filename);
+                    surface_material = new TextureMaterial(
+                            texture,
+                            std::stod(xml_surface_material_textured.child("phong").attribute("ka").value()),
+                            std::stod(xml_surface_material_textured.child("phong").attribute("kd").value()),
+                            std::stod(xml_surface_material_textured.child("phong").attribute("ks").value()),
+                            std::stoi(xml_surface_material_textured.child("phong").attribute("exponent").value()),
+                            std::stod(xml_surface_material_textured.child("reflectance").attribute("r").value()),
+                            std::stod(xml_surface_material_textured.child("transmittance").attribute("t").value()),
+                            std::stof(xml_surface_material_textured.child("refraction").attribute("iof").value())
+                    );
+                }
 
                 if (std::strcmp(xml_surface.name(), "sphere") == 0) {
                     const auto* surface_position = new vec3(xml_surface.child("position"));
@@ -98,7 +123,7 @@ public:
 
                     auto sphere = std::make_unique<Sphere>(
                             *surface_position,
-                            *surface_material,
+                            surface_material,
                             sphere_radius
                             );
 
@@ -109,7 +134,7 @@ public:
                     std::string xml_surface_filename = (input_filename_directory / xml_surface.attribute("name").value()).string();
 
                     auto mesh = std::make_shared<Mesh>(
-                            *surface_material
+                            surface_material
                     );
 
                     WavefrontParser::importWavefrontMesh(xml_surface_filename, mesh);

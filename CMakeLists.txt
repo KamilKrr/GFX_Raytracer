@@ -21,7 +21,7 @@ set(LODEPNG_SOURCES
 set(PROJECT_SOURCES
         src/vec3.h
         src/Raytracer.h
-        src/ImageExporter.h
+        src/ImageEncoder.h
         src/Image.h
         src/Color.h
         src/Scene.h
@@ -40,6 +40,10 @@ set(PROJECT_SOURCES
         src/Mesh.h
         src/Face.h
         src/PointLight.h
+        src/ImageDecoder.h
+        src/ColorMaterial.h
+        src/TextureMaterial.h
+        src/point2.h
 )
 
 message (STATUS "Compiler ID: " ${CMAKE_CXX_COMPILER_ID})

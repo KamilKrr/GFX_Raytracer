@@ -9,7 +9,7 @@ class Mesh : public Surface {
     std::vector<shared_ptr<Face>> faces;
 
 public:
-    explicit Mesh(const Material& material)
+    explicit Mesh(const Material* material)
             : Surface{material} {}
 
     bool hit(const Ray& r, Intersection& intersection) const override {
@@ -44,10 +44,16 @@ public:
 
         if(t > r.getMaxDistance() || t < r.getMinDistance()) return false;
 
+        double w = 1.0 - u - v;
+        vec3 interpolatedNormal = face->interpolateNormal(u, v, w);
+        point2 interpolatedTexel = face->interpolateTexel(u, v, w);
+        Color interpolatedColor = material->getColorAtTexel(interpolatedTexel);
+
+        intersection.setColor(interpolatedColor);
         intersection.setDistance(t);
         intersection.setPosition(r.at(t));
-        intersection.setNormal(face->vn0);
-        intersection.setMaterial(&this->material);
+        intersection.setNormal(interpolatedNormal);
+        intersection.setMaterial(this->material);
 
         return true;
     }

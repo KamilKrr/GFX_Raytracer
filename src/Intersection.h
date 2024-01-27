@@ -9,17 +9,21 @@ class Intersection {
     double distance;
     vec3 normal;
     const Material* material = nullptr;
+    Color color;
 
 public:
     const point3& getPosition() const { return position; }
     double getDistance() const { return distance; }
     const vec3& getNormal() const { return normal; }
     const Material* getMaterial() const { return material; }
+    const Color getColor() const { return color; }
 
     void setPosition(const point3& pos) { position = pos; }
     void setDistance(double dist) { distance = dist; }
     void setNormal(const vec3& norm) { normal = unit_vector(norm); }
     void setMaterial(const Material* mat) { material = mat; }
+    void setColor(Color col) { color = col; }
+
 };
 
 #endif //RAYTRACER_INTERSECTION_H

@@ -9,7 +9,7 @@ class Sphere : public Surface {
     double radius;
 
 public:
-    Sphere(const vec3& position, const Material& material, double radius)
+    Sphere(const vec3& position, const Material* material, double radius)
             : Surface{material}, position{position}, radius{radius} {}
 
     bool hit(const Ray& r, Intersection& intersection) const override {
@@ -32,10 +32,11 @@ public:
                 return false;
         }
 
+        intersection.setColor(this->material->getColorAtTexel(point2(0, 0)));
         intersection.setDistance(root);
         intersection.setPosition(r.at(root));
         intersection.setNormal(vec3((intersection.getPosition() - position) / radius));
-        intersection.setMaterial(&this->material);
+        intersection.setMaterial(this->material);
 
         return true;
     }

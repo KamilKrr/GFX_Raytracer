@@ -8,15 +8,15 @@
 
 class Surface {
 protected:
-    Material material;
+    const Material* material; // Use a pointer to Material
 
 public:
-    explicit Surface(const Material& material)
-            : material{material} {}
+    explicit Surface(const Material* material)
+            : material(material) {}
     virtual ~Surface() = default;
 
     virtual bool hit(const Ray& r, Intersection& intersection) const = 0;
-    Material& getMaterial() { return material; }
+    const Material* getMaterial() const { return material; }
 };
 
 #endif //RAYTRACER_SURFACE_H

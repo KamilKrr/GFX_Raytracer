@@ -3,7 +3,7 @@
 
 #include "Scene.h"
 #include "Image.h"
-#include "ImageExporter.h"
+#include "ImageEncoder.h"
 #include "Ray.h"
 
 class Raytracer {
@@ -26,7 +26,7 @@ public:
 
         for (const auto& surface : scene->getSurfaces()) {
             if (surface->hit(ray, intersection)) {
-                auto ambientColor = intersection.getMaterial()->getColor() * intersection.getMaterial()->getKa();
+                auto ambientColor = intersection.getColor() * intersection.getMaterial()->getKa();
                 auto color = ambientColor;
 
                 for (const auto& light : scene->getLights()) {
@@ -36,7 +36,7 @@ public:
                     }
                 }
 
-                if(depth > 0){
+                if(depth > this->scene->getCamera()->getMaxBounces()){
                     return color;
                 }
 
@@ -60,7 +60,7 @@ public:
     Color illuminate(const Ray* ray, Intersection& intersection, const std::shared_ptr<Light> light) const {
         double lambertian = light->lambertian(intersection);
 
-        auto diffuseColor = intersection.getMaterial()->getColor() * intersection.getMaterial()->getKd() * lambertian;
+        auto diffuseColor = intersection.getColor() * intersection.getMaterial()->getKd() * lambertian;
 
         if(lambertian > 0) {
             vec3 relection = light->reflection(intersection);
@@ -94,8 +94,8 @@ public:
 
 
     void output() {
-        ImageExporter::exportImage(*image);
-        std::cout << "Successfully rendered image " << this->image->getName() << std::endl;
+        ImageEncoder::exportImage(*image);
+        std::cout << std::endl << "Successfully rendered image " << this->image->getName() << std::endl;
     }
 
     void initialize(const Scene* s) {

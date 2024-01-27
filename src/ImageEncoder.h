@@ -1,15 +1,15 @@
-#ifndef RAYTRACER_IMAGEEXPORTER_H
-#define RAYTRACER_IMAGEEXPORTER_H
+#ifndef RAYTRACER_IMAGEENCODER_H
+#define RAYTRACER_IMAGEENCODER_H
 
 #include "Image.h"
 #include <iostream>
 #include "../lib/lodepng/lodepng.h"
 
-class ImageExporter {
+class ImageEncoder {
 public:
     static void exportImage(const Image& image) {
         std::string filename = image.getName();
-        unsigned error = lodepng::encode(filename, ImageExporter::createColorBuffer(image), image.getWidth(), image.getHeight());
+        unsigned error = lodepng::encode(filename, ImageEncoder::createColorBuffer(image), image.getWidth(), image.getHeight());
 
         if (error) {
             std::cerr << "Error " << error << ": " << lodepng_error_text(error) << std::endl;
@@ -35,4 +35,4 @@ private:
     }
 };
 
-#endif //RAYTRACER_IMAGEEXPORTER_H
+#endif //RAYTRACER_IMAGEENCODER_H
