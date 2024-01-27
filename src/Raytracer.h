@@ -28,7 +28,7 @@ public:
         for (const auto& surface : scene->getSurfaces()) {
             if (surface->hit(*ray, intersection)) {
                 auto ambientColor = intersection.getMaterial()->getColor() * intersection.getMaterial()->getKa();
-                        auto color = ambientColor;
+                auto color = ambientColor;
 
                 for (const auto& light : scene->getLights()) {
                     //ignore lights that are "behind" objects -> this is responsible for shadows
@@ -36,6 +36,8 @@ public:
                         color = color + illuminate(ray, intersection, light);
                     }
                 }
+
+                if()
 
                 return std::make_shared<Color>(color);
             }
@@ -45,12 +47,12 @@ public:
     }
 
     Color illuminate(const Ray* ray, Intersection& intersection, const std::shared_ptr<Light> light) const {
-        double lambertian = light->lambertian(intersection.getNormal());
+        double lambertian = light->lambertian(intersection);
 
         auto diffuseColor = intersection.getMaterial()->getColor() * intersection.getMaterial()->getKd() * lambertian;
 
         if(lambertian > 0) {
-            vec3 relection = light->reflection(intersection.getNormal());
+            vec3 relection = light->reflection(intersection);
             double specAngle = std::max(dot(relection, -ray->direction()), 0.0);
             double specular = pow(specAngle, intersection.getMaterial()->getExponent());
             auto specularColor = light->getColor() * intersection.getMaterial()->getKs() * specular;
@@ -62,7 +64,7 @@ public:
     }
 
     bool cast_shadowray(const Intersection& intersection, const Light& light) const {
-        Ray ray = light.castRayToLight(intersection.getPosition());
+        Ray ray = light.castRayToLight(intersection);
         Intersection shadowRayIntersection;
 
         for (const auto& surface : scene->getSurfaces()) {

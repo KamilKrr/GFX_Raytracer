@@ -8,6 +8,9 @@
 #include "Surface.h"
 #include "Sphere.h"
 #include "ParallelLight.h"
+#include "Mesh.h"
+#include "WavefrontParser.h"
+#include "PointLight.h"
 #include <string>
 #include <iostream>
 #include <memory>
@@ -61,6 +64,11 @@ public:
                     auto light = std::make_unique<ParallelLight>(*color, *light_direction);
 
                     scene->addLight(std::move(light));
+                }else if (std::strcmp(xml_light.name(), "point_light") == 0) {
+                    const point3* light_position = new point3(xml_light.child("position"));
+                    auto light = std::make_unique<PointLight>(*color, *light_position);
+
+                    scene->addLight(std::move(light));
                 }
             }
 
@@ -68,24 +76,23 @@ public:
             pugi::xml_node xml_surfaces = xml_scene.child("surfaces");
 
             for (pugi::xml_node xml_surface = xml_surfaces.first_child(); xml_surface; xml_surface = xml_surface.next_sibling()) {
+
+                pugi::xml_node xml_surface_material_solid = xml_surface.child("material_solid");
+
+                const Color* material_color = new Color(xml_surface_material_solid.child("color"));
+                const Material* surface_material = new Material(
+                        *material_color,
+                        std::stod(xml_surface_material_solid.child("phong").attribute("ka").value()),
+                        std::stod(xml_surface_material_solid.child("phong").attribute("kd").value()),
+                        std::stod(xml_surface_material_solid.child("phong").attribute("ks").value()),
+                        std::stoi(xml_surface_material_solid.child("phong").attribute("exponent").value()),
+                        std::stod(xml_surface_material_solid.child("reflectance").attribute("r").value()),
+                        std::stod(xml_surface_material_solid.child("transmittance").attribute("t").value()),
+                        std::stof(xml_surface_material_solid.child("refraction").attribute("iof").value())
+                );
+
                 if (std::strcmp(xml_surface.name(), "sphere") == 0) {
                     const auto* surface_position = new vec3(xml_surface.child("position"));
-
-                    pugi::xml_node xml_surface_material_solid = xml_surface.child("material_solid");
-
-                    const Color* material_color = new Color(xml_surface_material_solid.child("color"));
-                    const Material* surface_material = new Material(
-                            *material_color,
-                            std::stod(xml_surface_material_solid.child("phong").attribute("ka").value()),
-                            std::stod(xml_surface_material_solid.child("phong").attribute("kd").value()),
-                            std::stod(xml_surface_material_solid.child("phong").attribute("ks").value()),
-                            std::stoi(xml_surface_material_solid.child("phong").attribute("exponent").value()),
-                            std::stod(xml_surface_material_solid.child("reflectance").attribute("r").value()),
-                            std::stod(xml_surface_material_solid.child("transmittance").attribute("t").value()),
-                            std::stof(xml_surface_material_solid.child("refraction").attribute("iof").value())
-                            );
-
-
 
                     double sphere_radius = std::stod(xml_surface.attribute("radius").value());
 
@@ -96,6 +103,17 @@ public:
                             );
 
                     scene->addSurface(std::move(sphere));
+                }else if (std::strcmp(xml_surface.name(), "mesh") == 0) {
+                    //construct path relative to the scene.xml file
+                    std::filesystem::path input_filename_directory = std::filesystem::path(filename).parent_path();
+                    std::string xml_surface_filename = (input_filename_directory / xml_surface.attribute("name").value()).string();
+
+                    auto mesh = std::make_shared<Mesh>(
+                            *surface_material
+                    );
+
+                    WavefrontParser::importWavefrontMesh(xml_surface_filename, mesh);
+                    scene->addSurface(std::move(mesh));
                 }
             }
         } else {

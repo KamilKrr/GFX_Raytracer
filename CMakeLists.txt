@@ -36,6 +36,10 @@ set(PROJECT_SOURCES
         src/Ray.h
         src/ParallelLight.h
         src/Intersection.h
+        src/WavefrontParser.h
+        src/Mesh.h
+        src/Face.h
+        src/PointLight.h
 )
 
 message (STATUS "Compiler ID: " ${CMAKE_CXX_COMPILER_ID})

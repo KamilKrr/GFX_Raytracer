@@ -18,7 +18,7 @@ public:
 
     void setPosition(const point3& pos) { position = pos; }
     void setDistance(double dist) { distance = dist; }
-    void setNormal(const vec3& norm) { normal = norm; }
+    void setNormal(const vec3& norm) { normal = unit_vector(norm); }
     void setMaterial(const Material* mat) { material = mat; }
 };
 

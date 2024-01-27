@@ -5,11 +5,12 @@
 #include "Intersection.h"
 
 class Sphere : public Surface {
+    vec3 position;
     double radius;
 
 public:
     Sphere(const vec3& position, const Material& material, double radius)
-            : Surface{position, material}, radius{radius} {}
+            : Surface{material}, position{position}, radius{radius} {}
 
     bool hit(const Ray& r, Intersection& intersection) const override {
         vec3 oc = r.origin() - this->position;
@@ -28,6 +29,7 @@ public:
             if (root <= r.getMinDistance() || r.getMaxDistance() <= root)
                 return false;
         }
+
         intersection.setDistance(root);
         intersection.setPosition(r.at(root));
         intersection.setNormal(vec3((intersection.getPosition() - position) / radius));

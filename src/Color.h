@@ -2,6 +2,7 @@
 #define RAYTRACER_COLOR_H
 
 #include "../lib/pugixml/pugixml.hpp"
+#include "vec3.h"
 
 class Color {
     int _r;
@@ -17,6 +18,8 @@ public:
             : _r{static_cast<int>(std::stod(xml_color_node.attribute("r").value()) * 255)},
               _g{static_cast<int>(std::stod(xml_color_node.attribute("g").value()) * 255)},
               _b{static_cast<int>(std::stod(xml_color_node.attribute("b").value()) * 255)} {}
+
+    Color(vec3 v) : _r{static_cast<int>(round(v.x() * 255))}, _g{static_cast<int>(round(v.y() * 255))}, _b{static_cast<int>(round(v.z() * 255))} {}
 
     int r() const { return this->_r; }
     int g() const { return this->_g; }

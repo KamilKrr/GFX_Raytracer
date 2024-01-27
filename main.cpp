@@ -8,7 +8,8 @@
 int main() {
     std::cout << "Enter the filepath for the scene XML file relative to your current path (" << std::filesystem::current_path() << "): ";
     std::string filePath;
-    std::cin >> filePath;
+    //std::cin >> filePath;
+    filePath = "../scenes/example5.xml";
 
     auto* scene = SceneParser::parseScene(filePath);
 

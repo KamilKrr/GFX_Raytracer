@@ -28,6 +28,7 @@ public:
             std::stod(xml_position_node.attribute("y").value()),
             std::stod(xml_position_node.attribute("z").value())
         } {}
+    vec3(const std::string& e0, const std::string& e1, const std::string& e2) : e{std::stod(e0), std::stod(e1), std::stod(e2)} {}
 
     double x() const { return e[0]; }
     double y() const { return e[1]; }

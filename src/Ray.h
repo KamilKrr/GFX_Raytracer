@@ -15,7 +15,8 @@ public:
     point3 origin() const  { return orig; }
     vec3 direction() const { return dir; }
     double getMinDistance() const { return min_distance; }
-    double getMaxDistance() const {return max_distance; }
+    double getMaxDistance() const { return max_distance; }
+    void setMaxDistance(double max) { max_distance = max; }
 
     point3 at(double t) const {
         return orig + t*dir;
