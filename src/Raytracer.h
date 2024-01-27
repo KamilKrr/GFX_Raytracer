@@ -48,6 +48,11 @@ public:
                     reflected_color = trace(reflected_ray, depth + 1) * intersection.getMaterial()->getReflectance();
                 }
 
+                if(intersection.getMaterial()->getTransmittance() > 0){
+                    const auto refracted_ray = get_refracted_ray(ray, intersection);
+                    refracted_color = trace(refracted_ray, depth + 1) * intersection.getMaterial()->getTransmittance();
+                }
+
                 color = color * (1 - intersection.getMaterial()->getReflectance() - intersection.getMaterial()->getTransmittance())
                         + reflected_color + refracted_color;
                 return color;
@@ -89,6 +94,18 @@ public:
 
     Ray get_reflected_ray(const Ray& ray, const Intersection& intersection) const {
         vec3 r = unit_vector(reflect(ray.direction(), intersection.getNormal()));
+        return {intersection.getPosition(), r};
+    }
+
+    Ray get_refracted_ray(const Ray& ray, const Intersection& intersection) const {
+        double cosi = std::clamp(dot(ray.direction(), intersection.getNormal()), -1.0, 1.0);
+        double etai = 1, etat = intersection.getMaterial()->getIndexOfRefraction();
+        vec3 n = intersection.getNormal();
+        if (cosi < 0) { cosi = -cosi; } else { std::swap(etai, etat); n = -intersection.getNormal(); }
+        double eta = etai / etat;
+        double k = 1 - eta * eta * (1 - cosi * cosi);
+        vec3 r = k < 0 ? vec3() : eta * ray.direction() + (eta * cosi - sqrt(k)) * n;
+
         return {intersection.getPosition(), r};
     }
 
