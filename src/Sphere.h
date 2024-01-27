@@ -19,7 +19,9 @@ public:
         auto c = oc.length_squared() - radius*radius;
 
         auto discriminant = half_b*half_b - a*c;
+
         if (discriminant < 0) return false;
+
         auto sqrtd = sqrt(discriminant);
 
         // Find the nearest root that lies in the acceptable range.

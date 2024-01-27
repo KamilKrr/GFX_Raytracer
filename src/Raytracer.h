@@ -14,36 +14,47 @@ public:
     void render() {
         for (unsigned y = 0; y < image->getHeight(); ++y) {
             for (unsigned x = 0; x < image->getWidth(); ++x) {
-                const Ray* ray = scene->getCamera()->getRayToPixel(x, y);
-                const auto color = trace(ray);
-                image->setPixelColor(x, y, *color);
+                const auto ray = scene->getCamera()->getRayToPixel(x, y);
+                const auto color = trace(*ray);
+                image->setPixelColor(x, y, color);
             }
         }
     }
 
-    std::shared_ptr<Color> trace(const Ray* ray) const {
-        auto accumulatedColor = std::make_shared<Color>(*scene->getBackgroundColor());
+    Color trace(const Ray& ray, int depth = 0) const {
         Intersection intersection;
 
         for (const auto& surface : scene->getSurfaces()) {
-            if (surface->hit(*ray, intersection)) {
+            if (surface->hit(ray, intersection)) {
                 auto ambientColor = intersection.getMaterial()->getColor() * intersection.getMaterial()->getKa();
                 auto color = ambientColor;
 
                 for (const auto& light : scene->getLights()) {
                     //ignore lights that are "behind" objects -> this is responsible for shadows
                     if(!cast_shadowray(intersection, *light)){
-                        color = color + illuminate(ray, intersection, light);
+                        color = color + illuminate(&ray, intersection, light);
                     }
                 }
 
-                if()
+                if(depth > 0){
+                    return color;
+                }
 
-                return std::make_shared<Color>(color);
+                auto reflected_color = Color(0, 0, 0);
+                auto refracted_color = Color(0, 0, 0);
+
+                if(intersection.getMaterial()->getReflectance() > 0){
+                    const auto reflected_ray = get_reflected_ray(ray, intersection);
+                    reflected_color = trace(reflected_ray, depth + 1) * intersection.getMaterial()->getReflectance();
+                }
+
+                color = color * (1 - intersection.getMaterial()->getReflectance() - intersection.getMaterial()->getTransmittance())
+                        + reflected_color + refracted_color;
+                return color;
             }
         }
 
-        return std::make_shared<Color>(*scene->getBackgroundColor());
+        return *scene->getBackgroundColor();
     }
 
     Color illuminate(const Ray* ray, Intersection& intersection, const std::shared_ptr<Light> light) const {
@@ -69,11 +80,16 @@ public:
 
         for (const auto& surface : scene->getSurfaces()) {
             if (surface->hit(ray, shadowRayIntersection)) {
-                if(shadowRayIntersection.getDistance() < 0.001) continue;
+                if(shadowRayIntersection.getDistance() < ray.getMinDistance()) continue;
                 return true;
             }
         }
         return false;
+    }
+
+    Ray get_reflected_ray(const Ray& ray, const Intersection& intersection) const {
+        vec3 r = unit_vector(reflect(ray.direction(), intersection.getNormal()));
+        return {intersection.getPosition(), r};
     }
 
 

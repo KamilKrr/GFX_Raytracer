@@ -28,7 +28,7 @@ public:
         vec3 pvec = cross(r.direction(), v0v2);
         float det = dot(v0v1, pvec);
 
-        if (fabs(det) < 0.0000001) return false;
+        if (fabs(det) < r.getMinDistance()) return false;
 
         float invDet = 1 / det;
 
@@ -42,7 +42,7 @@ public:
 
         double t = dot(v0v2, qvec) * invDet;
 
-        if(t > r.getMaxDistance()) return false;
+        if(t > r.getMaxDistance() || t < r.getMinDistance()) return false;
 
         intersection.setDistance(t);
         intersection.setPosition(r.at(t));
