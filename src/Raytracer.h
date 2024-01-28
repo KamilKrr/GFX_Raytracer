@@ -23,59 +23,79 @@ public:
 
     Color trace(const Ray& ray, int depth = 0) const {
         Intersection intersection;
+        double shortest_hit_distance = infinity;
+        Intersection closest_intersection;
+        bool has_intersected = false;
 
         for (const auto& surface : scene->getSurfaces()) {
-            if (surface->hit(ray, intersection)) {
-                auto ambientColor = intersection.getColor() * intersection.getMaterial()->getKa();
-                auto color = ambientColor;
+            Ray object_ray = ray;
+            object_ray.to_object_space(*surface);
 
-                for (const auto& light : scene->getLights()) {
-                    //ignore lights that are "behind" objects -> this is responsible for shadows
-                    if(!cast_shadowray(intersection, *light)){
-                        color = color + illuminate(&ray, intersection, light);
-                    }
+            if (surface->hit(object_ray, intersection)) {
+                intersection.to_world_space(ray, *surface);
+
+                if(intersection.getDistance() < shortest_hit_distance) {
+                    shortest_hit_distance = intersection.getDistance();
+                    closest_intersection = intersection;
+                    has_intersected = true;
                 }
-
-                if(depth > this->scene->getCamera()->getMaxBounces()){
-                    return color;
-                }
-
-                auto reflected_color = Color(0, 0, 0);
-                auto refracted_color = Color(0, 0, 0);
-
-                if(intersection.getMaterial()->getReflectance() > 0){
-                    const auto reflected_ray = get_reflected_ray(ray, intersection);
-                    reflected_color = trace(reflected_ray, depth + 1) * intersection.getMaterial()->getReflectance();
-                }
-
-                if(intersection.getMaterial()->getTransmittance() > 0){
-                    const auto refracted_ray = get_refracted_ray(ray, intersection);
-                    refracted_color = trace(refracted_ray, depth + 1) * intersection.getMaterial()->getTransmittance();
-                }
-
-                color = color * (1 - intersection.getMaterial()->getReflectance() - intersection.getMaterial()->getTransmittance())
-                        + reflected_color + refracted_color;
-                return color;
             }
         }
+
+        if(has_intersected)
+            return illuminate(ray, closest_intersection, depth);
 
         return *scene->getBackgroundColor();
     }
 
-    Color illuminate(const Ray* ray, Intersection& intersection, const std::shared_ptr<Light> light) const {
+    Color illuminate(const Ray ray, Intersection& intersection, int depth) const {
+        auto ambientColor = intersection.getColor() * intersection.getMaterial()->getKa();
+        auto color = ambientColor;
+
+        for (const auto& light : scene->getLights()) {
+            //ignore lights that are "behind" objects -> this is responsible for shadows
+            if(!cast_shadowray(intersection, *light)){
+                color = illuminateLight(&ray, intersection, light);
+            }
+        }
+
+        if(depth > this->scene->getCamera()->getMaxBounces()){
+            return color;
+        }
+
+        auto reflected_color = Color(0, 0, 0);
+        auto refracted_color = Color(0, 0, 0);
+
+        if(intersection.getMaterial()->getReflectance() > 0){
+            const auto reflected_ray = get_reflected_ray(ray, intersection);
+            reflected_color = trace(reflected_ray, depth + 1) * intersection.getMaterial()->getReflectance();
+        }
+
+        if(intersection.getMaterial()->getTransmittance() > 0){
+            const auto refracted_ray = get_refracted_ray(ray, intersection);
+            refracted_color = trace(refracted_ray, depth + 1) * intersection.getMaterial()->getTransmittance();
+        }
+
+        color = color * (1 - intersection.getMaterial()->getReflectance() - intersection.getMaterial()->getTransmittance())
+                + reflected_color + refracted_color;
+        return color;
+    }
+
+    Color illuminateLight(const Ray* ray, Intersection& intersection, const std::shared_ptr<Light> light) const {
         double lambertian = light->lambertian(intersection);
+
+        //return Color(intersection.getNormal());
 
         auto diffuseColor = intersection.getColor() * intersection.getMaterial()->getKd() * lambertian;
 
         if(lambertian > 0) {
             vec3 relection = light->reflection(intersection);
-            double specAngle = std::max(dot(relection, -ray->direction()), 0.0);
+            double specAngle = std::max(dot(relection, unit_vector(this->scene->getCamera()->getPosition() - intersection.getPosition())), 0.0);
             double specular = pow(specAngle, intersection.getMaterial()->getExponent());
             auto specularColor = light->getColor() * intersection.getMaterial()->getKs() * specular;
 
             return diffuseColor + specularColor;
         }
-
         return diffuseColor;
     }
 
@@ -84,7 +104,12 @@ public:
         Intersection shadowRayIntersection;
 
         for (const auto& surface : scene->getSurfaces()) {
-            if (surface->hit(ray, shadowRayIntersection)) {
+            Ray object_ray = ray;
+            object_ray.to_object_space(*surface);
+
+            if (surface->hit(object_ray, shadowRayIntersection)) {
+                shadowRayIntersection.to_world_space(ray, *surface);
+
                 if(shadowRayIntersection.getDistance() < ray.getMinDistance()) continue;
                 return true;
             }
@@ -104,7 +129,9 @@ public:
         if (cosi < 0) { cosi = -cosi; } else { std::swap(etai, etat); n = -intersection.getNormal(); }
         double eta = etai / etat;
         double k = 1 - eta * eta * (1 - cosi * cosi);
-        vec3 r = k < 0 ? vec3() : eta * ray.direction() + (eta * cosi - sqrt(k)) * n;
+
+        if(k < 0) return get_reflected_ray(ray, intersection);
+        vec3 r = eta * ray.direction() + (eta * cosi - sqrt(k)) * n;
 
         return {intersection.getPosition(), r};
     }

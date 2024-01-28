@@ -14,6 +14,7 @@ public:
             : phong{ka, kd, ks, exponent},
               reflectance{reflectance}, transmittance{transmittance},
               index_of_refraction{index_of_refraction} {}
+    virtual ~Material() = default;
 
     double getKa() const { return phong.ka; }
     double getKd() const { return phong.kd; }

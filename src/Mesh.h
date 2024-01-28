@@ -52,7 +52,7 @@ public:
         intersection.setColor(interpolatedColor);
         intersection.setDistance(t);
         intersection.setPosition(r.at(t));
-        intersection.setNormal(interpolatedNormal);
+        intersection.setNormal(unit_vector(interpolatedNormal));
         intersection.setMaterial(this->material);
 
         return true;

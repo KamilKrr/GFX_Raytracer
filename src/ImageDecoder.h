@@ -16,7 +16,6 @@ public:
 
         if(error) std::cerr << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
 
-        //the pixels are now in the vector "image", 4 bytes per pixel, ordered RGBARGBA..., use it as texture, draw it, ...
         Image image{filename, width, height};
 
         unsigned int idx{0};

@@ -13,7 +13,7 @@ public:
 
     const Image& getTexture() const { return texture; }
     Color getColorAtTexel(point2 texel) const {
-        return texture.getColor(texel.x() * texture.getWidth(), texel.y() * texture.getHeight());
+        return texture.getColor(std::fmod(texel.x(), 1.0) * texture.getWidth(), std::fmod(texel.y(), 1.0) * texture.getHeight());
     }
 };
 

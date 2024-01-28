@@ -25,6 +25,55 @@ public:
         m[2][0] = m20; m[2][1] = m21; m[2][2] = m22; m[2][3] = m23;
         m[3][0] = m30; m[3][1] = m31; m[3][2] = m32; m[3][3] = m33;
     }
+
+    static matrix from_translation(vec3 t) {
+        matrix m;
+        m.m[0][3] = t.x();
+        m.m[1][3] = t.y();
+        m.m[2][3] = t.z();
+        return m;
+    }
+
+    static matrix from_scale(vec3 s) {
+        matrix m;
+        m.m[0][0] = s.x();
+        m.m[1][1] = s.y();
+        m.m[2][2] = s.z();
+        return m;
+    }
+
+    static matrix from_rotation_x(double t) {
+        double angle = degrees_to_radians(t);
+        matrix m;
+        m.m[1][1] = cos(angle);
+        m.m[2][2] = cos(angle);
+        m.m[1][2] = sin(angle);
+        m.m[2][1] = -sin(angle);
+
+        return m;
+    }
+
+    static matrix from_rotation_y(double t) {
+        double angle = degrees_to_radians(t);
+        matrix m;
+        m.m[0][0] = cos(angle);
+        m.m[2][2] = cos(angle);
+        m.m[0][2] = -sin(angle);
+        m.m[2][0] = sin(angle);
+
+        return m;
+    }
+
+    static matrix from_rotation_z(double t) {
+        double angle = degrees_to_radians(t);
+        matrix m;
+        m.m[0][0] = cos(angle);
+        m.m[1][1] = cos(angle);
+        m.m[0][1] = sin(angle);
+        m.m[1][0] = -sin(angle);
+
+        return m;
+    }
 };
 
 inline std::ostream& operator<<(std::ostream& out, const matrix& mat) {
@@ -63,6 +112,30 @@ inline matrix operator*(const matrix& mat1, const matrix& mat2) {
         }
     }
     return result;
+}
+
+inline matrix ignore_translation(const matrix& m) {
+    return {
+        m.m[0][0], m.m[0][1], m.m[0][2], 0,
+        m.m[1][0], m.m[1][1], m.m[1][2], 0,
+        m.m[2][0], m.m[2][1], m.m[2][2], 0,
+        m.m[3][0], m.m[3][1], m.m[3][2], m.m[3][3]
+    };
+}
+
+inline bool operator==(const matrix& mat1, const matrix& mat2) {
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            if (mat1.m[i][j] != mat2.m[i][j]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+inline bool operator!=(const matrix& mat1, const matrix& mat2) {
+    return !(mat1 == mat2);
 }
 
 #endif //RAYTRACER_MATRIX_H

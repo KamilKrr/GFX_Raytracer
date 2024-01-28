@@ -46,4 +46,8 @@ Color operator*(const Color& lhs, double factor) {
     return result;
 }
 
+inline std::ostream& operator<<(std::ostream &out, const Color &c) {
+    return out << c.r() << ' ' << c.g() << ' ' << c.b();
+}
+
 #endif //RAYTRACER_COLOR_H

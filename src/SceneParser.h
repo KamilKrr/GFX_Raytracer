@@ -116,18 +116,18 @@ public:
                     );
                 }
 
+                shared_ptr<Surface> surface;
+
                 if (std::strcmp(xml_surface.name(), "sphere") == 0) {
                     const auto* surface_position = new vec3(xml_surface.child("position"));
 
                     double sphere_radius = std::stod(xml_surface.attribute("radius").value());
 
-                    auto sphere = std::make_unique<Sphere>(
+                    surface = std::make_shared<Sphere>(
                             *surface_position,
                             surface_material,
                             sphere_radius
                             );
-
-                    scene->addSurface(std::move(sphere));
                 }else if (std::strcmp(xml_surface.name(), "mesh") == 0) {
                     //construct path relative to the scene.xml file
                     std::filesystem::path input_filename_directory = std::filesystem::path(filename).parent_path();
@@ -138,8 +138,30 @@ public:
                     );
 
                     WavefrontParser::importWavefrontMesh(xml_surface_filename, mesh);
-                    scene->addSurface(std::move(mesh));
+                    surface = mesh;
                 }
+
+                pugi::xml_node xml_surface_transform = xml_surface.child("transform");
+                if(xml_surface_transform){
+                    for (pugi::xml_node xml_surface_elemental_transform = xml_surface_transform.first_child(); xml_surface_elemental_transform; xml_surface_elemental_transform = xml_surface_elemental_transform.next_sibling()) {
+                        if (std::strcmp(xml_surface_elemental_transform.name(), "translate") == 0) {
+                            vec3 translation = vec3(xml_surface_elemental_transform);
+                            surface->translate(translation);
+                        }else if (std::strcmp(xml_surface_elemental_transform.name(), "scale") == 0){
+                            vec3 scale = vec3(xml_surface_elemental_transform);
+                            surface->scale(scale);
+                        }else if (std::strcmp(xml_surface_elemental_transform.name(), "rotateX") == 0){
+                            surface->rotateX(std::stod(xml_surface_elemental_transform.attribute("theta").value()));
+                        }else if (std::strcmp(xml_surface_elemental_transform.name(), "rotateY") == 0){
+                            surface->rotateY(std::stod(xml_surface_elemental_transform.attribute("theta").value()));
+                        }else if (std::strcmp(xml_surface_elemental_transform.name(), "rotateZ") == 0){
+                            surface->rotateZ(std::stod(xml_surface_elemental_transform.attribute("theta").value()));
+                        }
+                    }
+                }
+
+
+                scene->addSurface(std::move(surface));
             }
         } else {
             std::cerr << "Failed to load XML file. Error description: " << result.description() << std::endl;

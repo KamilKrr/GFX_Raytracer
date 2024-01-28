@@ -3,6 +3,7 @@
 
 #include "vec3.h"
 #include "Material.h"
+#include "Ray.h"
 
 class Intersection {
     point3 position;
@@ -23,6 +24,11 @@ public:
     void setNormal(const vec3& norm) { normal = unit_vector(norm); }
     void setMaterial(const Material* mat) { material = mat; }
     void setColor(Color col) { color = col; }
+
+    void to_world_space(const Ray& world_ray, const Surface& surface) {
+        position = world_ray.at(distance);
+        normal = surface.normal_to_world_space(normal);
+    }
 
 };
 

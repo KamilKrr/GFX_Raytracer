@@ -3,7 +3,7 @@
 
 class point2 {
 public:
-    double e[22];
+    double e[2];
 
     point2() : e{0, 0} {}
     point2(double e0, double e1) : e{e0, e1} {}
