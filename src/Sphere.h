@@ -31,12 +31,15 @@ public:
             if (root <= r.getMinDistance() || r.getMaxDistance() <= root)
                 return false;
         }
-
-        intersection.setColor(this->material->getColorAtTexel(point2(0, 0)));
         intersection.setDistance(root);
         intersection.setPosition(r.at(root));
         intersection.setNormal(vec3((intersection.getPosition() - position) / radius));
         intersection.setMaterial(this->material);
+
+
+        double u = 0.5 + atan2(intersection.getNormal().x(), intersection.getNormal().z()) / (2 * pi);
+        double v = 0.5 + asin(intersection.getNormal().y()) / pi;
+        intersection.setColor(this->material->getColorAtTexel(point2(u, v)));
 
         return true;
     }
