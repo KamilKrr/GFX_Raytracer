@@ -3,6 +3,7 @@
 
 #include "vec3.h"
 #include "Ray.h"
+#include "matrix.h"
 #include <cmath>
 
 class Camera {
@@ -31,6 +32,7 @@ public:
     int getMaxBounces() const { return max_bounces; }
 
     Ray* getRayToPixel(unsigned int u, unsigned int v) const {
+        point3 origin = point3(0, 0, 0);
         //normalize coordinates
         double xn = (u + 0.5) / resolution_horizontal;
         double yn = (v + 0.5) / resolution_vertical;
@@ -47,7 +49,36 @@ public:
         vec3 direction = vec3(xi, yi, -1);
         direction = unit_vector(direction);
 
-        return new Ray(position, direction);
+        matrix t = getTransformationMatrix();
+        matrix r = getRotationMatrix();
+
+        return new Ray(t * origin, unit_vector(r * direction));
+    }
+
+    matrix getTransformationMatrix() const {
+        vec3 z = unit_vector(position - lookat);
+        vec3 x = unit_vector(cross(up, z));
+        vec3 y = unit_vector(cross(z, x));
+
+        return {
+            x.x(), y.x(), z.x(), position.x(),
+            x.y(), y.y(), z.y(), position.y(),
+            x.z(), y.z(), z.z(), position.z(),
+            0, 0, 0, 1
+        };
+    }
+
+    matrix getRotationMatrix() const {
+        vec3 z = unit_vector(position - lookat);
+        vec3 x = unit_vector(cross(up, z));
+        vec3 y = unit_vector(cross(z, x));
+
+        return {
+                x.x(), y.x(), z.x(), 0,
+                x.y(), y.y(), z.y(), 0,
+                x.z(), y.z(), z.z(), 0,
+                0, 0, 0, 1
+        };
     }
 };
 

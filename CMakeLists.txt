@@ -44,6 +44,7 @@ set(PROJECT_SOURCES
         src/ColorMaterial.h
         src/TextureMaterial.h
         src/point2.h
+        src/matrix.h
 )
 
 message (STATUS "Compiler ID: " ${CMAKE_CXX_COMPILER_ID})
