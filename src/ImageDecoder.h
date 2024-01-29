@@ -21,9 +21,9 @@ public:
         unsigned int idx{0};
         for (unsigned int i = 0; i < buffer.size(); i+=4, ++idx) {
             const auto& color = Color(
-                    buffer.at(i+0),
-                    buffer.at(i+1),
-                    buffer.at(i+2)
+                    buffer.at(i+0)/255.0,
+                    buffer.at(i+1)/255.0,
+                    buffer.at(i+2)/255.0
                     );
             image.setPixelColor(idx, color);
         }

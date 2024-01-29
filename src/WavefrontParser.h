@@ -35,7 +35,7 @@ private:
                 point2 texel = point2(parts.at(1), parts.at(2));
                 texels.push_back(texel);
             }else if(parts.at(0) == "vn") {
-                vec3 normal = vec3(parts.at(1), parts.at(2), parts.at(3));
+                vec3 normal = unit_vector(vec3(parts.at(1), parts.at(2), parts.at(3)));
                 normals.push_back(normal);
             }else if(parts.at(0) == "f") {
                 int v1 = std::stoi(splitIntoParts(parts.at(1), '/').at(0));

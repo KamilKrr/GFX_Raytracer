@@ -14,8 +14,23 @@ public:
     void render() {
         for (unsigned y = 0; y < image->getHeight(); ++y) {
             for (unsigned x = 0; x < image->getWidth(); ++x) {
-                const auto ray = scene->getCamera()->getRayToPixel(x, y);
-                const auto color = trace(*ray);
+
+                //supersampling
+                Color color = Color(0, 0, 0);
+                int supersamples = scene->getCamera()->getSupersamples();
+                for(int sx = 0; sx < supersamples; ++sx) {
+                    for(int sy = 0; sy < supersamples; ++sy) {
+                        double planck = 1.0/(supersamples + 1);
+                        double jitterx = -0.5 + (sx + 1) * planck;
+                        double jittery = -0.5 + (sy + 1) * planck;
+
+                        const auto ray = scene->getCamera()->getRayToPixel(x + jitterx, y + jittery);
+
+                        color = color + trace(*ray);
+                    }
+                }
+                color = color / (supersamples * supersamples);
+
                 image->setPixelColor(x, y, color);
             }
         }
@@ -48,7 +63,7 @@ public:
     }
 
     Color illuminate(const Ray ray, Intersection& intersection, point3 pixelOrigin, int depth) const {
-        auto ambientColor = intersection.getColor() * intersection.getMaterial()->getKa();
+        auto ambientColor = this->scene->getAmbientLight()->getColor() * intersection.getColor() * intersection.getMaterial()->getKa();
         auto color = ambientColor;
 
         for (const auto& light : scene->getLights()) {

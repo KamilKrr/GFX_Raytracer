@@ -42,7 +42,7 @@ public:
             vec3* position = new vec3(xml_camera.child("position"));
             vec3* lookat = new vec3(xml_camera.child("lookat"));
             vec3* up = new vec3(xml_camera.child("up"));
-            const auto* camera = new Camera(
+            auto* camera = new Camera(
                     *position,
                     *lookat,
                     *up,
@@ -51,6 +51,10 @@ public:
                     std::stoi(xml_camera.child("resolution").attribute("vertical").value()),
                     std::stoi(xml_camera.child("max_bounces").attribute("n").value())
                 );
+            pugi::xml_node xml_supersamples = xml_camera.child("supersamples");
+            if(xml_supersamples != nullptr){
+                camera->setSupersamples(std::stoi(xml_supersamples.attribute("n").value()));
+            }
             scene->setCamera(camera);
 
             //Lights

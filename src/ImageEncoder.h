@@ -23,9 +23,9 @@ private:
         for (int y = image.getHeight() - 1; y >= 0; --y) {
             for (int x = 0; x < image.getWidth(); ++x) {
                 const auto& color = image.getColor(x, y);
-                buffer[idx + 0] = std::min(static_cast<int>(color.r()), 255);
-                buffer[idx + 1] = std::min(static_cast<int>(color.g()), 255);
-                buffer[idx + 2] = std::min(static_cast<int>(color.b()), 255);
+                buffer[idx + 0] = std::min(static_cast<int>(color.r() * 255), 255);
+                buffer[idx + 1] = std::min(static_cast<int>(color.g() * 255), 255);
+                buffer[idx + 2] = std::min(static_cast<int>(color.b() * 255), 255);
                 buffer[idx + 3] = 255;
                 idx += 4;
             }

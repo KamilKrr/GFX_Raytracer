@@ -14,6 +14,7 @@ class Camera {
     int resolution_horizontal;
     int resolution_vertical;
     int max_bounces;
+    int supersamples = 1;
 
 public:
     Camera(const vec3& position, const vec3& lookat, const vec3& up,
@@ -30,6 +31,14 @@ public:
     int getResolutionHorizontal() const { return resolution_horizontal; }
     int getResolutionVertical() const { return resolution_vertical; }
     int getMaxBounces() const { return max_bounces; }
+
+
+    int getSupersamples() const {
+        return supersamples;
+    }
+    void setSupersamples(int supersamples) {
+        Camera::supersamples = supersamples;
+    }
 
     Ray* getRayToPixel(unsigned int u, unsigned int v) const {
         point3 origin = point3(0, 0, 0);

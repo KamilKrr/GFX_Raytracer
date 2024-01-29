@@ -5,25 +5,25 @@
 #include "vec3.h"
 
 class Color {
-    int _r;
-    int _g;
-    int _b;
+    double _r;
+    double _g;
+    double _b;
 
 public:
-    Color() : _r{255}, _g{20}, _b{147} {} // set pink as default color to spot artifacts more easily
+    Color() : _r{1.0}, _g{1.1}, _b{1.5} {} // set pink as default color to spot artifacts more easily
 
-    Color(int r, int g, int b) : _r{r}, _g{g}, _b{b} {}
+    Color(double r, double g, double b) : _r{r}, _g{g}, _b{b} {}
 
     Color(pugi::xml_node xml_color_node)
-            : _r{static_cast<int>(std::stod(xml_color_node.attribute("r").value()) * 255)},
-              _g{static_cast<int>(std::stod(xml_color_node.attribute("g").value()) * 255)},
-              _b{static_cast<int>(std::stod(xml_color_node.attribute("b").value()) * 255)} {}
+            : _r{std::stod(xml_color_node.attribute("r").value())},
+              _g{std::stod(xml_color_node.attribute("g").value())},
+              _b{std::stod(xml_color_node.attribute("b").value())} {}
 
-    Color(vec3 v) : _r{static_cast<int>(round(v.x() * 255))}, _g{static_cast<int>(round(v.y() * 255))}, _b{static_cast<int>(round(v.z() * 255))} {}
+    Color(vec3 v) : _r{(v.x())}, _g{v.y()}, _b{v.z()} {}
 
-    int r() const { return this->_r; }
-    int g() const { return this->_g; }
-    int b() const { return this->_b; }
+    double r() const { return this->_r; }
+    double g() const { return this->_g; }
+    double b() const { return this->_b; }
 
     Color& operator+(const Color& other) {
         _r += other._r;
@@ -33,9 +33,16 @@ public:
     }
 
     Color& operator*(double factor) {
-        _r = static_cast<int>(_r * factor);
-        _g = static_cast<int>(_g * factor);
-        _b = static_cast<int>(_b * factor);
+        _r = _r * factor;
+        _g = _g * factor;
+        _b = _b * factor;
+        return *this;
+    }
+
+    Color& operator/(double factor) {
+        _r = _r / factor;
+        _g = _g / factor;
+        _b = _b / factor;
         return *this;
     }
 };
@@ -44,6 +51,21 @@ Color operator*(const Color& lhs, double factor) {
     Color result = lhs;
     result = result * factor;
     return result;
+}
+
+Color operator/(const Color& lhs, double factor) {
+    Color result = lhs;
+    result = result / factor;
+    return result;
+}
+
+
+Color operator*(const Color& lhs, const Color& rhs) {
+    return {
+        lhs.r() * rhs.r(),
+        lhs.g() * rhs.g(),
+        lhs.b() * rhs.b()
+    };
 }
 
 inline std::ostream& operator<<(std::ostream &out, const Color &c) {

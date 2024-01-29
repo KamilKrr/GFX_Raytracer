@@ -15,6 +15,7 @@ public:
     Ray(const point3& origin, const vec3& direction) : orig(origin), dir(direction) {}
 
     point3 origin() const  { return orig; }
+    void displaceOrigin(vec3 d) { orig += d; }
     vec3 direction() const { return dir; }
     double getMinDistance() const { return min_distance; }
     double getMaxDistance() const { return max_distance; }
