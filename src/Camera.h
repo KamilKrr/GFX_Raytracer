@@ -16,6 +16,9 @@ class Camera {
     int max_bounces;
     int supersamples = 1;
 
+    vec3 animPosition;
+    vec3 animLookat;
+
 public:
     Camera(const vec3& position, const vec3& lookat, const vec3& up,
            int horizontal_fov, int resolution_horizontal, int resolution_vertical, int max_bounces)
@@ -32,12 +35,32 @@ public:
     int getResolutionVertical() const { return resolution_vertical; }
     int getMaxBounces() const { return max_bounces; }
 
+    void animationStep(int frames_left) {
+        position = position + (animPosition - position) / frames_left;
+        lookat = lookat + (animLookat - lookat) / frames_left;
+    }
 
     int getSupersamples() const {
         return supersamples;
     }
     void setSupersamples(int supersamples) {
         Camera::supersamples = supersamples;
+    }
+
+    const vec3 &getAnimPosition() const {
+        return animPosition;
+    }
+
+    void setAnimPosition(const vec3 &animPosition) {
+        Camera::animPosition = animPosition;
+    }
+
+    const vec3 &getAnimLookat() const {
+        return animLookat;
+    }
+
+    void setAnimLookat(const vec3 &animLookat) {
+        Camera::animLookat = animLookat;
     }
 
     Ray* getRayToPixel(unsigned int u, unsigned int v) const {

@@ -5,15 +5,24 @@
 #include "Image.h"
 #include "ImageEncoder.h"
 #include "Ray.h"
+#include "GifEncoder.h"
 
 class Raytracer {
-    const Scene* scene;
-    Image* image;
+    Scene* scene;
+    std::vector<Image> images;
 
 public:
     void render() {
-        for (unsigned y = 0; y < image->getHeight(); ++y) {
-            for (unsigned x = 0; x < image->getWidth(); ++x) {
+        //render multiple images for gifs
+        for(auto& image : images) {
+            renderImage(image);
+            scene->animationStep();
+        }
+    }
+
+    void renderImage(Image& image) {
+        for (unsigned y = 0; y < image.getHeight(); ++y) {
+            for (unsigned x = 0; x < image.getWidth(); ++x) {
 
                 //supersampling
                 Color color = Color(0, 0, 0);
@@ -31,7 +40,7 @@ public:
                 }
                 color = color / (supersamples * supersamples);
 
-                image->setPixelColor(x, y, color);
+                image.setPixelColor(x, y, color);
             }
         }
     }
@@ -152,19 +161,22 @@ public:
 
 
     void output() {
-        ImageEncoder::exportImage(*image);
-        std::cout << std::endl << "Successfully rendered image " << this->image->getName() << std::endl;
+        if(images.size() == 1) {
+            ImageEncoder::exportImage(images.front());
+            std::cout << std::endl << "Successfully rendered image " << images.front().getName() << "." << std::endl;
+        }else {
+            GifEncoder::exportGif(images, scene->getDelay());
+            std::cout << std::endl << "Successfully rendered GIF " << images.front().getName() << " consisting of " << images.size() << " images." << std::endl;
+        }
     }
 
-    void initialize(const Scene* s) {
-        delete image;
-
+    void initialize(Scene* s) {
+        images.clear();
         this->scene = s;
-        this->image = new Image(this->scene->getOutputFile(), this->scene->getCamera()->getResolutionHorizontal(), this->scene->getCamera()->getResolutionVertical());
-    }
 
-    ~Raytracer() {
-        delete image;
+        for(int i = 0; i < s->getFrames(); i++) {
+            this->images.emplace_back(this->scene->getOutputFile(), this->scene->getCamera()->getResolutionHorizontal(), this->scene->getCamera()->getResolutionVertical());
+        }
     }
 };
 

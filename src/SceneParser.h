@@ -51,9 +51,21 @@ public:
                     std::stoi(xml_camera.child("resolution").attribute("vertical").value()),
                     std::stoi(xml_camera.child("max_bounces").attribute("n").value())
                 );
+
+            //Supersampling
             pugi::xml_node xml_supersamples = xml_camera.child("supersamples");
             if(xml_supersamples != nullptr){
                 camera->setSupersamples(std::stoi(xml_supersamples.attribute("n").value()));
+            }
+
+            //Animations
+            pugi::xml_node xml_anim = xml_camera.child("anim");
+            if(xml_anim != nullptr){
+                scene->setFrames(std::stoi(xml_anim.attribute("frames").value()));
+                scene->setDelay(std::stoi(xml_anim.attribute("delay").value()));
+
+                camera->setAnimPosition(xml_anim.child("position"));
+                camera->setAnimLookat(xml_anim.child("lookat"));
             }
             scene->setCamera(camera);
 
