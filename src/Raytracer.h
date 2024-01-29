@@ -107,9 +107,7 @@ public:
     Color illuminateLight(const Ray* ray, Intersection& intersection, const std::shared_ptr<Light> light, point3 pixelOrigin) const {
         double lambertian = light->lambertian(intersection);
 
-        //return Color(intersection.getNormal());
-
-        auto diffuseColor = intersection.getColor() * intersection.getMaterial()->getKd() * lambertian;
+        auto diffuseColor = light->getColor() * intersection.getColor() * intersection.getMaterial()->getKd() * lambertian;
 
         if(lambertian > 0) {
             vec3 relection = light->reflection(intersection);
