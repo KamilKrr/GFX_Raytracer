@@ -22,7 +22,8 @@ protected:
     matrix inverse_rotation_y;
     matrix inverse_rotation_z;
     matrix inverse_scaling;
-    std::vector<matrix> transforms;
+    matrix object2world;
+    matrix world2object;
 
 public:
     explicit Surface(const Material* material)
@@ -35,47 +36,41 @@ public:
     void translate(vec3 t) {
         translation = matrix::from_translation(t);
         inverse_translation = matrix::from_translation(-t);
-        transforms.push_back(inverse_translation);
+        world2object = inverse_translation * world2object;
     }
     void scale(vec3 s) {
         scaling = matrix::from_scale(s);
         inverse_scaling = matrix::from_scale(1/s);
-        transforms.push_back(inverse_scaling);
+        world2object = inverse_scaling * world2object;
+        object2world = object2world * inverse_scaling;
     }
     void rotateX(double r) {
-        rotation_x = matrix::from_rotation_x(r);
-        inverse_rotation_x = matrix::from_rotation_x(-r);
-        transforms.push_back(inverse_rotation_x);
+        rotation_x = matrix::from_rotation_x(-r);
+        inverse_rotation_x = matrix::from_rotation_x(r);
+        world2object = inverse_rotation_x * world2object;
+        object2world = object2world * rotation_x;
     }
     void rotateY(double r) {
-        rotation_y = matrix::from_rotation_y(r);
-        inverse_rotation_y = matrix::from_rotation_y(-r);
-        transforms.push_back(inverse_rotation_y);
+        rotation_y = matrix::from_rotation_y(-r);
+        inverse_rotation_y = matrix::from_rotation_y(r);
+        world2object = inverse_rotation_y * world2object;
+        object2world = object2world * rotation_y;
     }
     void rotateZ(double r) {
-        rotation_z = matrix::from_rotation_z(r);
-        inverse_rotation_z = matrix::from_rotation_z(-r);
-        transforms.push_back(inverse_rotation_z);
+        rotation_z = matrix::from_rotation_z(-r);
+        inverse_rotation_z = matrix::from_rotation_z(r);
+        world2object = inverse_rotation_z * world2object;
+        object2world = object2world * rotation_z;
     }
 
     matrix getModelMatrix(bool include_translation = true) const {
-        matrix modelMatrix;
-        for (auto it = transforms.rbegin(); it != transforms.rend(); ++it) {
-            modelMatrix = modelMatrix * *it;
-        }
         if(include_translation)
-            return modelMatrix;
-        return ignore_translation(modelMatrix);
+            return world2object;
+        return ignore_translation(world2object);
     }
 
     vec3 normal_to_world_space(vec3 normal) const {
-        normal = inverse_rotation_x * normal;
-        normal = inverse_rotation_y * normal;
-        normal = inverse_rotation_z * normal;
-        normal = scaling * normal;
-        normal = unit_vector(normal);
-
-        return normal;
+        return unit_vector(object2world * normal);
     }
 };
 

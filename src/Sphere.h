@@ -38,7 +38,7 @@ public:
 
 
         double u = 0.5 + atan2(intersection.getNormal().x(), intersection.getNormal().z()) / (2 * pi);
-        double v = 0.5 + asin(intersection.getNormal().y()) / pi;
+        double v = 0.5 - asin(intersection.getNormal().y()) / pi;
         intersection.setColor(this->material->getColorAtTexel(point2(u, v)));
 
         return true;

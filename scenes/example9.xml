@@ -110,7 +110,7 @@
                 <scale x="0.8" y="5.0" z="0.8"/>
             </transform>
         </mesh>
-	
+
 
         <!-- Floor -->
         <mesh name="plane_small.obj">

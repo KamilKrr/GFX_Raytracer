@@ -13,10 +13,19 @@ public:
             : Surface{material} {}
 
     bool hit(const Ray& r, Intersection& intersection) const override {
+        Intersection closest_intersection;
+        closest_intersection.setDistance(infinity);
+
         for(auto face : faces) {
             if(rayTriangleIntersect(r, intersection, face)){
-                return true;
+                if(intersection.getDistance() < closest_intersection.getDistance())
+                    closest_intersection = intersection;
             }
+        }
+
+        if(closest_intersection.getDistance() < infinity) {
+            intersection = closest_intersection;
+            return true;
         }
         return false;
     }
@@ -52,7 +61,7 @@ public:
         intersection.setColor(interpolatedColor);
         intersection.setDistance(t);
         intersection.setPosition(r.at(t));
-        intersection.setNormal(unit_vector(interpolatedNormal));
+        intersection.setNormal(interpolatedNormal);
         intersection.setMaterial(this->material);
 
         return true;

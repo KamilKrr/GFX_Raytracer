@@ -22,10 +22,11 @@ public:
     }
 
     Color trace(const Ray& ray, int depth = 0) const {
+        point3 pixelOrigin = ray.origin();
         Intersection intersection;
-        double shortest_hit_distance = infinity;
+
         Intersection closest_intersection;
-        bool has_intersected = false;
+        closest_intersection.setDistance(infinity);
 
         for (const auto& surface : scene->getSurfaces()) {
             Ray object_ray = ray;
@@ -34,32 +35,30 @@ public:
             if (surface->hit(object_ray, intersection)) {
                 intersection.to_world_space(ray, *surface);
 
-                if(intersection.getDistance() < shortest_hit_distance) {
-                    shortest_hit_distance = intersection.getDistance();
+                if(intersection.getDistance() < closest_intersection.getDistance()) {
                     closest_intersection = intersection;
-                    has_intersected = true;
                 }
             }
         }
 
-        if(has_intersected)
-            return illuminate(ray, closest_intersection, depth);
+        if(closest_intersection.getDistance() < infinity)
+            return illuminate(ray, closest_intersection, pixelOrigin, depth);
 
         return *scene->getBackgroundColor();
     }
 
-    Color illuminate(const Ray ray, Intersection& intersection, int depth) const {
+    Color illuminate(const Ray ray, Intersection& intersection, point3 pixelOrigin, int depth) const {
         auto ambientColor = intersection.getColor() * intersection.getMaterial()->getKa();
         auto color = ambientColor;
 
         for (const auto& light : scene->getLights()) {
             //ignore lights that are "behind" objects -> this is responsible for shadows
             if(!cast_shadowray(intersection, *light)){
-                color = illuminateLight(&ray, intersection, light);
+                color = color + illuminateLight(&ray, intersection, light, pixelOrigin);
             }
         }
 
-        if(depth > this->scene->getCamera()->getMaxBounces()){
+        if(depth >= this->scene->getCamera()->getMaxBounces()){
             return color;
         }
 
@@ -81,7 +80,7 @@ public:
         return color;
     }
 
-    Color illuminateLight(const Ray* ray, Intersection& intersection, const std::shared_ptr<Light> light) const {
+    Color illuminateLight(const Ray* ray, Intersection& intersection, const std::shared_ptr<Light> light, point3 pixelOrigin) const {
         double lambertian = light->lambertian(intersection);
 
         //return Color(intersection.getNormal());
@@ -90,7 +89,7 @@ public:
 
         if(lambertian > 0) {
             vec3 relection = light->reflection(intersection);
-            double specAngle = std::max(dot(relection, unit_vector(this->scene->getCamera()->getPosition() - intersection.getPosition())), 0.0);
+            double specAngle = std::max(dot(relection, unit_vector(pixelOrigin - intersection.getPosition())), 0.0);
             double specular = pow(specAngle, intersection.getMaterial()->getExponent());
             auto specularColor = light->getColor() * intersection.getMaterial()->getKs() * specular;
 
