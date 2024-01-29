@@ -10,7 +10,6 @@ class WavefrontParser {
 public:
     static void importWavefrontMesh(const std::string filename, const std::shared_ptr<Mesh> mesh) {
         std::ifstream objfile (filename);
-        std::cout << filename;
         if (objfile.is_open()) {
             parseFile(objfile, mesh);
             objfile.close();
@@ -22,7 +21,7 @@ private:
         std::vector<point3> vertices{};
         std::vector<point2> texels{};
         std::vector<vec3> normals{};
-        std::vector<shared_ptr<Face>> faces;
+        std::vector<std::shared_ptr<Face>> faces;
 
         for (std::string line; std::getline(file,line);)
         {

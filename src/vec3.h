@@ -5,8 +5,6 @@
 #include <iostream>
 #include "../lib/pugixml/pugixml.hpp"
 
-using std::shared_ptr;
-using std::make_shared;
 using std::sqrt;
 
 const double infinity = std::numeric_limits<double>::infinity();

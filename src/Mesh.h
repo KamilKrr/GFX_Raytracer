@@ -6,7 +6,7 @@
 #include "Face.h"
 
 class Mesh : public Surface {
-    std::vector<shared_ptr<Face>> faces;
+    std::vector<std::shared_ptr<Face>> faces;
 
 public:
     explicit Mesh(const Material* material)
@@ -67,7 +67,7 @@ public:
         return true;
     }
 
-    void setFaces(const std::vector<shared_ptr<Face>> &faces) {
+    void setFaces(const std::vector<std::shared_ptr<Face>> &faces) {
         Mesh::faces = faces;
     }
 };

@@ -1,6 +1,7 @@
 #ifndef RAYTRACER_H
 #define RAYTRACER_H
 
+#include <functional>
 #include "Scene.h"
 #include "Image.h"
 #include "ImageEncoder.h"

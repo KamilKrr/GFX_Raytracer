@@ -18,6 +18,7 @@
 #include <iostream>
 #include <memory>
 #include <cstring>
+#include <filesystem>
 
 class SceneParser {
 public:
@@ -132,7 +133,7 @@ public:
                     );
                 }
 
-                shared_ptr<Surface> surface;
+                std::shared_ptr<Surface> surface;
 
                 if (std::strcmp(xml_surface.name(), "sphere") == 0) {
                     const auto* surface_position = new vec3(xml_surface.child("position"));
