@@ -7,6 +7,7 @@
 #include "ImageEncoder.h"
 #include "Ray.h"
 #include "GifEncoder.h"
+#include <numeric>
 
 class Raytracer {
     Scene* scene;
@@ -18,6 +19,15 @@ public:
         for(auto& image : images) {
             renderImage(image);
             scene->animationStep();
+        }
+
+        //average multiple images for motion blur
+        if(scene->hasMotionBlur()){
+            Image averagedImage = std::accumulate(images.begin() + 1, images.end(), images.front(),
+                                                  [](const Image& acc, const Image& img) { return acc + img; });
+            averagedImage = averagedImage / images.size();
+            images.clear();
+            images.push_back(averagedImage);
         }
     }
 
@@ -160,11 +170,11 @@ public:
 
 
     void output() {
-        if(images.size() == 1) {
+        if(images.size() == 1){
             ImageEncoder::exportImage(images.front());
             std::cout << std::endl << "Successfully rendered image " << images.front().getName() << "." << std::endl;
-        }else {
-            GifEncoder::exportGif(images, scene->getDelay());
+        }else{
+            GifEncoder::exportGif(images, scene->getCamera()->getDelay());
             std::cout << std::endl << "Successfully rendered GIF " << images.front().getName() << " consisting of " << images.size() << " images." << std::endl;
         }
     }

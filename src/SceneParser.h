@@ -62,8 +62,8 @@ public:
             //Animations
             pugi::xml_node xml_anim = xml_camera.child("anim");
             if(xml_anim != nullptr){
-                scene->setFrames(std::stoi(xml_anim.attribute("frames").value()));
-                scene->setDelay(std::stoi(xml_anim.attribute("delay").value()));
+                camera->setFrames(std::stoi(xml_anim.attribute("frames").value()));
+                camera->setDelay(std::stoi(xml_anim.attribute("delay").value()));
 
                 camera->setAnimPosition(xml_anim.child("position"));
                 camera->setAnimLookat(xml_anim.child("lookat"));
@@ -177,6 +177,11 @@ public:
                     }
                 }
 
+                pugi::xml_node xml_surface_blur = xml_surface.child("blur");
+                if(xml_surface_blur){
+                    surface->setBlurMotion(xml_surface_blur.child("motion"));
+                    surface->setBlurFrames(std::stoi(xml_surface_blur.attribute("frames").value()));
+                }
 
                 scene->addSurface(std::move(surface));
             }

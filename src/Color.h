@@ -47,6 +47,12 @@ public:
     }
 };
 
+Color operator+(const Color& lhs, const Color& rhs) {
+    Color result = lhs;
+    result = result + rhs;
+    return result;
+}
+
 Color operator*(const Color& lhs, double factor) {
     Color result = lhs;
     result = result * factor;

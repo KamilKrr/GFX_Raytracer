@@ -61,6 +61,10 @@ public:
     double length_squared() const {
         return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
     }
+
+    explicit operator bool() const {
+        return e[0] != 0 || e[1] != 0 || e[2] != 0;
+    }
 };
 
 using point3 = vec3;

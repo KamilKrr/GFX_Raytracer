@@ -18,9 +18,9 @@ class Scene {
     std::vector<std::shared_ptr<Light>> lights;
     std::vector<std::shared_ptr<Surface>> surfaces;
 
-    int frames = 1;
-    int delay = 1;
-    int cframe = 0;
+    int cframe = 1;
+
+    bool motion_blur = true;
 
 public:
     void setOutputFile(std::string f) { this->output_file = std::move(f); }
@@ -38,7 +38,13 @@ public:
     std::shared_ptr<AmbientLight> getAmbientLight() const { return this->ambientLight; }
 
     void animationStep() {
-        camera->animationStep(frames-cframe);
+        if(cframe < camera->getFrames())
+            camera->animationStep(camera->getFrames()-cframe);
+
+        for(auto s : surfaces) {
+            if(cframe < s->getBlurFrames())
+                s->animationStep(s->getBlurFrames()-cframe);
+        }
         ++cframe;
     }
 
@@ -56,19 +62,18 @@ public:
     }
 
     int getFrames() const {
+        int frames = camera->getFrames();
+        for(auto surface : surfaces) {
+            if(surface->getBlurFrames() > frames) frames = surface->getBlurFrames();
+        }
         return frames;
     }
 
-    void setFrames(int frames) {
-        Scene::frames = frames;
-    }
-
-    int getDelay() const {
-        return delay;
-    }
-
-    void setDelay(int delay) {
-        Scene::delay = delay;
+    bool hasMotionBlur() const {
+        for(auto surface : surfaces) {
+            if(surface->hasMotionBlur()) return true;
+        }
+        return false;
     }
 };
 

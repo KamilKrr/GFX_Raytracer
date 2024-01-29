@@ -19,6 +19,9 @@ class Camera {
     vec3 animPosition;
     vec3 animLookat;
 
+    int frames = 1;
+    int delay = 1;
+
 public:
     Camera(const vec3& position, const vec3& lookat, const vec3& up,
            int horizontal_fov, int resolution_horizontal, int resolution_vertical, int max_bounces)
@@ -61,6 +64,22 @@ public:
 
     void setAnimLookat(const vec3 &animLookat) {
         Camera::animLookat = animLookat;
+    }
+
+    int getFrames() const {
+        return frames;
+    }
+
+    void setFrames(int frames) {
+        Camera::frames = frames;
+    }
+
+    int getDelay() const {
+        return delay;
+    }
+
+    void setDelay(int delay) {
+        Camera::delay = delay;
     }
 
     Ray* getRayToPixel(unsigned int u, unsigned int v) const {

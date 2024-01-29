@@ -12,18 +12,10 @@ class Ray;
 class Surface {
 protected:
     const Material* material;
-    matrix translation;
-    matrix rotation_x;
-    matrix rotation_y;
-    matrix rotation_z;
-    matrix scaling;
-    matrix inverse_translation;
-    matrix inverse_rotation_x;
-    matrix inverse_rotation_y;
-    matrix inverse_rotation_z;
-    matrix inverse_scaling;
     matrix object2world;
     matrix world2object;
+    vec3 blur_motion;
+    int blur_frames = 0;
 
 public:
     explicit Surface(const Material* material)
@@ -33,34 +25,41 @@ public:
     virtual bool hit(const Ray& r, Intersection& intersection) const = 0;
     const Material* getMaterial() const { return material; }
 
+    void setBlurMotion(vec3 bm) {
+        blur_motion = bm;
+    }
+
+    void setBlurFrames(int bf) {
+        blur_frames = bf;
+    }
+
+    int getBlurFrames() const {
+        return blur_frames;
+    }
+
+    bool hasMotionBlur() const {
+        return (bool)blur_motion;
+    }
+
     void translate(vec3 t) {
-        translation = matrix::from_translation(t);
-        inverse_translation = matrix::from_translation(-t);
-        world2object = inverse_translation * world2object;
+        world2object = matrix::from_translation(-t) * world2object;
     }
     void scale(vec3 s) {
-        scaling = matrix::from_scale(s);
-        inverse_scaling = matrix::from_scale(1/s);
+        matrix inverse_scaling = matrix::from_scale(1/s);
         world2object = inverse_scaling * world2object;
         object2world = object2world * inverse_scaling;
     }
     void rotateX(double r) {
-        rotation_x = matrix::from_rotation_x(-r);
-        inverse_rotation_x = matrix::from_rotation_x(r);
-        world2object = inverse_rotation_x * world2object;
-        object2world = object2world * rotation_x;
+        world2object = matrix::from_rotation_x(r) * world2object;
+        object2world = object2world * matrix::from_rotation_x(-r);
     }
     void rotateY(double r) {
-        rotation_y = matrix::from_rotation_y(-r);
-        inverse_rotation_y = matrix::from_rotation_y(r);
-        world2object = inverse_rotation_y * world2object;
-        object2world = object2world * rotation_y;
+        world2object = matrix::from_rotation_y(r) * world2object;
+        object2world = object2world * matrix::from_rotation_y(-r);
     }
     void rotateZ(double r) {
-        rotation_z = matrix::from_rotation_z(-r);
-        inverse_rotation_z = matrix::from_rotation_z(r);
-        world2object = inverse_rotation_z * world2object;
-        object2world = object2world * rotation_z;
+        world2object = matrix::from_rotation_z(r) * world2object;
+        object2world = object2world * matrix::from_rotation_z(-r);
     }
 
     matrix getModelMatrix(bool include_translation = true) const {
@@ -71,6 +70,10 @@ public:
 
     vec3 normal_to_world_space(vec3 normal) const {
         return unit_vector(object2world * normal);
+    }
+
+    void animationStep(int frames_left) {
+        translate(blur_motion);
     }
 };
 
